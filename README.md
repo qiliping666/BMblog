@@ -1,5 +1,5 @@
 # BMblog
-
+_make.exe是编译BMblog必需的软件，请防止杀毒软件自动删除._
 BMblog is a fast blog framework.
 
 Use:
