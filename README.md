@@ -1,5 +1,4 @@
 # BMblog
-_make.exe是编译BMblog必需的软件，请防止杀毒软件自动删除._
 
 BMblog is a fast blog framework.
 
@@ -17,6 +16,7 @@ Some features:
 - Modular CSS with [React CSS Modules](https://github.com/gajus/react-css-modules)
 - API mock with [JSON server](https://www.npmjs.com/package/json-server)
 
+_make.exe是编译BMblog必需的软件，请防止杀毒软件自动删除._
 ## Running
 ```bash
 npm install

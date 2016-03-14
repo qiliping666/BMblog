@@ -35,6 +35,7 @@
     "lodash": "^3.10.1",
     "marked": "^0.3.5",
     "mysql": "^2.10.2",
+    "mysql-queues": "^1.0.0",
     "react": "^0.13.3",
     "react-mixin": "^1.4.0",
     "react-redux": "^2.1.0",

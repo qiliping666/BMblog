@@ -8,27 +8,10 @@ import jwtToken from 'jsonwebtoken';
 import path from 'path';
 import fs from 'fs';
 import _ from 'lodash';
-import mysql from 'mysql';
 import { system_config } from './config.js';
 
 const jsonPath = path.join(__dirname, 'data.json');
 const app = express();
-
-var connection = mysql.createConnection({
-    host: system_config.mysql_host,
-    user: system_config.mysql_user,
-    password: system_config.mysql_password,
-    database: system_config.mysql_database,
-    port: system_config.mysql_port
-});
-
-connection.connect(function (err) {
-    if(err){
-        console.log("Error Connected to MySQL! " + err);
-    }else{
-        console.log("Connected to MySQL!");
-    }
-});
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({extended: false}));
