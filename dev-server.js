@@ -8,6 +8,7 @@ import webpackHotMiddleware from 'webpack-hot-middleware';
 import fs from 'fs';
 import path from 'path';
 import _ from 'lodash';
+import { system_config } from './app/config.js';
 
 const env = process.env.NODE_ENV || 'development';
 const config = env === 'development' ? devConfig : prodConfig;
@@ -35,8 +36,9 @@ browserSync({
           if (err) return next(err);
 
           const template = _.template(source);
+          const blog_title = system_config.blog_title;
 
-          res.write(template({ html: '', initialState: 'undefined', env }));
+          res.write(template({ html: '', initialState: 'undefined', env, blog_title }));
           res.end();
         });
       }
