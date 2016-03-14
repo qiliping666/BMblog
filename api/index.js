@@ -22,6 +22,14 @@ var connection = mysql.createConnection({
     port: system_config.mysql_port
 });
 
+connection.connect(function (err) {
+    if(err){
+        console.log("Error Connected to MySQL! " + err);
+    }else{
+        console.log("Connected to MySQL!");
+    }
+});
+
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({extended: false}));
 

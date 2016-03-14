@@ -47,13 +47,15 @@ app.use((req, res, next) => {
       </Provider>
     );
 
+    const blog_title = system_config.blog_title;
+
     const initialState = JSON.stringify(store.getState());
 
     if (state.params.splat) {
       res.status(404);
     }
 
-    res.send(template({ html, initialState, env }));
+    res.send(template({ html, initialState, env, blog_title }));
   });
 });
 
