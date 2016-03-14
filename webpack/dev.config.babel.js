@@ -1,7 +1,7 @@
 /* eslint-env node */
 import webpack from 'webpack';
 import path from 'path';
-import cssnext from 'cssnext';
+import cssnext from 'postcss-cssnext';
 
 const bundle = process.env.BUNDLE || 'client';
 const env = process.env.NODE_ENV || 'development';

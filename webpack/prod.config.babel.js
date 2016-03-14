@@ -1,7 +1,7 @@
 /* eslint-env node */
 import webpack from 'webpack';
 import path from 'path';
-import cssnext from 'cssnext';
+import cssnext from 'postcss-cssnext';
 import ExtractTextPlugin from 'extract-text-webpack-plugin';
 
 const bundle = process.env.BUNDLE || 'client';
