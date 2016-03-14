@@ -39,3 +39,17 @@ rm -rf public app/server-bundle.js
 make
 npm start
 ```
+
+## Windows系统下安装和部署BMblog
+确保已经安装部署npm和github.
+###安装BMblog
+在命令行中输入
+```bash
+git clone https://github.com/Beethoven-Mozart/BMblog.git
+```
+
+###启动BMblog
+```bash
+npm start
+```
+在浏览器中输入[http://localhost:3000/](http://localhost:3000/)并打开，即可进入BMblog.
