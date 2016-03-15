@@ -12,8 +12,10 @@ import {
 import axios from 'axios';
 import getHeaders from '../utils/getHeaders';
 import { language } from '../i18n/select.js';
+import { system_config } from '../config.js';
 
-const baseUrl = 'http://localhost:1337';
+const baseUrl = 'http://' + system_config.API_server_host + ':' +  system_config.API_server_port;
+
 
 export function fetchPosts() {
   return async (dispatch) => {
