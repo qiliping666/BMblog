@@ -15,7 +15,7 @@
     "url": "git@github.com:Beethoven-Mozart/BMblog.git"
   },
   "scripts": {
-    "start": "NODE_ENV=production babel-node ./api & node . & wait",
+    "start": "babel-node ./api & node . & wait",
     "pretest": "make lint",
     "test": "make test",
     "postinstall": "make"

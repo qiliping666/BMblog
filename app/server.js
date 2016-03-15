@@ -15,7 +15,7 @@ import fillStore from './utils/fillStore';
 import stringifyLocation from './utils/stringifyLocation';
 import { system_config } from './config.js';
 
-const env = process.env.NODE_ENV || 'development';
+const env = system_config.System_type || 'development';
 const app = express();
 
 app.use(cookieParser());
