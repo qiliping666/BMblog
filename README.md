@@ -43,12 +43,16 @@ npm start
 
 ## Windows系统下安装和部署BMblog
 确保已经安装部署npm和github.
-###安装BMblog
+###复制BMblog到本地
 在命令行中输入
 ```bash
 git clone https://github.com/Beethoven-Mozart/BMblog.git
 ```
-
+###安装BMblog
+将本地BMblog仓库设置为当前目录.
+```bash
+npm install
+```
 ###启动BMblog
 ```bash
 npm start
