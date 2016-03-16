@@ -3,6 +3,8 @@ import mysql from 'mysql';
 import mysql_queues from 'mysql-queues';
 import async from 'async';
 
+const DEBUG = true;
+
 var connection = mysql.createConnection({
     host: system_config.mysql_host,
     user: system_config.mysql_user,
@@ -34,7 +36,7 @@ export function Query(string){
 
 var db_tran = function(){
 // 获取事务
-    queues(mysql);
+    queues(connection,DEBUG);
     var trans = mysql.startTransaction();
 
     async.series([
@@ -75,31 +77,4 @@ var db_tran = function(){
     });
 // 执行这个事务
     trans.execute();
-}
-
-
-const DEBUG = true;
-queues(conn, DEBUG);
-
-var trans = conn.startTransaction();
-
-trans.query("INSERT INTO person(id,name,password,sex,email) VALUES (‘33’, ‘name33’, ‘pass33’, ‘bb’, ‘33@aa.com’)", function(err, info) {
-    if (err) {
-//throw err;
-        trans.rollback();
-    } else {
-        trans.commit();
-    }
-});
-
-trans.query("INSERT INTO person(id,name,password,sex,email) VALUES (‘44’, ‘name44’, ‘pass44’, ‘bb’, ‘44@aa.com’)", function(err, info) {
-    if (err) {
-//throw err;
-        trans.rollback();
-    } else {
-        trans.commit();
-    }
-});
-
-trans.execute();
-console.log('execute');
+};
