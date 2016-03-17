@@ -6,6 +6,6 @@ export var system_config = {
     mysql_password: '', //数据库密码
     mysql_database: 'MBblog', //数据库名称
     mysql_port: 3306, //数据库端口号
+    mysql_prefix: 'bm_', //默认"bm_"
     country: 'cn' //所在国家的国家代码
 };
-
