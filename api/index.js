@@ -10,6 +10,7 @@ import fs from 'fs';
 import _ from 'lodash';
 import { system_config } from './config.js';
 import query from './db/mysql.js';
+import get_options from './db/mysql.js';
 
 const jsonPath = path.join(__dirname, 'data.json');
 const app = express();
@@ -124,11 +125,9 @@ app.use(jsonServer.router(jsonPath));
 app.listen(system_config.API_server_port);
 console.log("Now start HTTP-API server on port " + system_config.API_server_port + "...");
 
-query("SELECT * FROM " + system_config.mysql_prefix + "options",function(err,vals,fields){
-    if(err){
-        console.log("Error: " + err);
-    }else{
-        console.log(JSON.stringify(vals));
-    }
-
+get_options("siteurl", function (back) {
+    console.log(back);
+});
+get_options("blogname", function (back) {
+    console.log(back);
 });

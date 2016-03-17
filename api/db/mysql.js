@@ -4,6 +4,7 @@ import mysql_queues from 'mysql-queues';
 import async from 'async';
 
 const DEBUG = true;
+const mysql_prefix = system_config.mysql_prefix;//数据库前缀
 
 //export var connection = mysql.createConnection({
 //    host: system_config.mysql_host,
@@ -27,7 +28,7 @@ var query=function(sql,callback){
             callback(err,null,null);
             console.log("Error Connected to MySQL! " + err);
         }else{
-            console.log("Connected to MySQL!");
+            console.log("Connected to MySQL once.");
             conn.query(sql,function(qerr,vals,fields){
                 //释放连接
                 conn.release();
@@ -38,7 +39,20 @@ var query=function(sql,callback){
     });
 };
 
+
+var get_options= function (option_name,callback) {
+    query("SELECT `option_value` FROM `" + mysql_prefix + "options` WHERE `option_name` = '" + option_name + "'",function(err,vals,fields){
+        if(err){
+            console.log(err);
+            callback(err);
+        }else{
+            callback(vals[0].option_value);
+        }
+    });
+};
+
 module.exports=query;
+module.exports=get_options;
 
 //var db_tran = function(){
 //// 获取事务
