@@ -20,5 +20,6 @@ module.exports = {
   "Basic_info": "Basic info",
   "First_name": "First name",
   "Last_name": "Last name",
-  "written_by": "written by"
+  "written_by": "written by",
+  "Username": "Username"
 };

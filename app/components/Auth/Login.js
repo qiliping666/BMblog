@@ -15,7 +15,7 @@ export default class Login extends React.Component {
     }
 
     state = {
-        email: '',
+        username: '',
         password: ''
     }
 
@@ -26,14 +26,14 @@ export default class Login extends React.Component {
 
     handleLogin = e => {
         e.preventDefault();
-        const { email, password } = this.state;
+        const { username, password } = this.state;
 
-        this.props.handleLogin(email, password);
+        this.props.handleLogin(username, password);
     }
 
     render() {
         const { auth: { error } } = this.props;
-        const { email, password } = this.state;
+        const { username, password } = this.state;
 
         return (
             <div styleName="wrapper">
@@ -49,24 +49,24 @@ export default class Login extends React.Component {
                     </code>
                     <br />
                     <code>
-                        <span styleName="hilight">email@adress</span>
+                        <span styleName="hilight">root</span>
                     </code>
                     <br />
                     <code>
-                        <span styleName="hilight">pass</span>
+                        <span styleName="hilight">admin888</span>
                     </code>
                 </div>
 
                 <form onSubmit={this.handleLogin}>
-                    <label htmlFor="email">E-mail</label>
+                    <label htmlFor="username">{language.Username}</label>
 
                     <input
                         styleName="input"
-                        value={email}
-                        onChange={this.handleChange('email')}
-                        id="email"
-                        type="email"
-                        placeholder="Email"
+                        value={username}
+                        onChange={this.handleChange('username')}
+                        id="username"
+                        type="text"
+                        placeholder={language.Username}
                         required
                     />
 
@@ -77,7 +77,7 @@ export default class Login extends React.Component {
                         onChange={this.handleChange('password')}
                         id="password"
                         type="password"
-                        placeholder="Password"
+                        placeholder={language.Password}
                         required
                     />
 

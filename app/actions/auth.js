@@ -60,11 +60,11 @@ export function signup(email, password, router) {
   };
 }
 
-export function login(email, password, router) {
+export function login(username, password, router) {
   return async (dispatch) => {
     try {
       const { data: { token, user } } = await axios.post(`${baseUrl}/login`, {
-        email,
+        username,
         password
       });
 

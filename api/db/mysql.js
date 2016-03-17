@@ -22,37 +22,34 @@ var pool = mysql.createPool({
     port: system_config.mysql_port
 });
 
-var query=function(sql,callback){
-    pool.getConnection(function(err,conn){
-        if(err){
-            callback(err,null,null);
+export var query = function (sql, callback) {
+    pool.getConnection(function (err, conn) {
+        if (err) {
+            callback(err, null, null);
             console.log("Error Connected to MySQL! " + err);
-        }else{
+        } else {
             console.log("Connected to MySQL once.");
-            conn.query(sql,function(qerr,vals,fields){
+            conn.query(sql, function (qerr, vals, fields) {
                 //释放连接
                 conn.release();
                 //事件驱动回调
-                callback(qerr,vals,fields);
+                callback(qerr, vals, fields);
             });
         }
     });
 };
 
 
-var get_options= function (option_name,callback) {
-    query("SELECT `option_value` FROM `" + mysql_prefix + "options` WHERE `option_name` = '" + option_name + "'",function(err,vals,fields){
-        if(err){
+export var get_options = function (option_name, callback) {
+    query("SELECT `option_value` FROM `" + mysql_prefix + "options` WHERE `option_name` = '" + option_name + "'", function (err, vals, fields) {
+        if (err) {
             console.log(err);
             callback(err);
-        }else{
+        } else {
             callback(vals[0].option_value);
         }
     });
 };
-
-module.exports=query;
-module.exports=get_options;
 
 //var db_tran = function(){
 //// 获取事务

@@ -20,5 +20,6 @@ module.exports = {
   "Basic_info": "基本信息",
   "First_name": "名",
   "Last_name": "姓",
-  "written_by": "作者:"
+  "written_by": "作者:",
+  "Username": "用户名"
 };

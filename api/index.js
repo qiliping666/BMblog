@@ -9,11 +9,11 @@ import path from 'path';
 import fs from 'fs';
 import _ from 'lodash';
 import { system_config } from './config.js';
-import query from './db/mysql.js';
-import get_options from './db/mysql.js';
+import { query,get_options } from './db/mysql.js';
 
 const jsonPath = path.join(__dirname, 'data.json');
 const app = express();
+const mysql_prefix = system_config.mysql_prefix;//数据库前缀
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({extended: false}));
@@ -47,24 +47,28 @@ function extractToken(header) {
     return header.split(' ')[1];
 }
 
-// here comes the real hardcode
-const HARDCODED_EMAIL = 'email@adress';
-const HARDCODED_PASSWORD = 'pass';
-const HARDCODED_USER = {
-    id: 4,
-    email: 'email@adress',
-    password: 'pass'
-};
-
 app.post('/login', (req, res) => {
-    const { email, password } = req.body;
-    if (email === HARDCODED_EMAIL && password === HARDCODED_PASSWORD) {
-        const token = generateToken(email, password);
-        const user = HARDCODED_USER;
-        res.send({token, user});
-    } else {
-        res.sendStatus(401);
-    }
+    const { username, password } = req.body;
+    query("SELECT `user_pass`,`ID` FROM `" + mysql_prefix + "users`", function (err, vals, fields) {
+        if (err) {
+            res.sendStatus(401);
+        } else {
+            const HARDCODED_USER = {
+                id: vals[0].ID,
+                username: username,
+                password: vals[0].user_pass
+            };
+            if (password === vals[0].user_pass) {
+                const token = generateToken(username, password);
+                const user = HARDCODED_USER;
+                res.send({token, user});
+            } else {
+                res.sendStatus(401);
+            }
+        }
+
+
+    });
 });
 
 app.get('/profile', (req, res) => {
