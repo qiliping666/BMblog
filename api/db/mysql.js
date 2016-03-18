@@ -3,7 +3,7 @@ import mysql from 'mysql';
 import mysql_queues from 'mysql-queues';
 import async from 'async';
 
-const DEBUG = true;
+//const DEBUG = true;
 const mysql_prefix = system_config.mysql_prefix;//数据库前缀
 
 //export var connection = mysql.createConnection({

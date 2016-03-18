@@ -66,8 +66,6 @@ app.post('/login', (req, res) => {
                 res.sendStatus(401);
             }
         }
-
-
     });
 });
 

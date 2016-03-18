@@ -1,6 +1,9 @@
 # BMblog
 
+BMblog 是一个极速高效,拓展性强的博客系统.
 BMblog is a fast blog framework.
+
+BMblog使用MySQL数据库,前端使用React框架,后端采用REST API service.前后端可实现完全分离式的开发.
 
 Use:
 [React](http://facebook.github.io/react/),

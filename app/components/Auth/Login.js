@@ -8,28 +8,28 @@ export default class Login extends React.Component {
     static propTypes = {
         auth: PropTypes.object.isRequired,
         handleLogin: PropTypes.func.isRequired
-    }
+    };
 
     static contextTypes = {
         router: React.PropTypes.object
-    }
+    };
 
     state = {
         username: '',
         password: ''
-    }
+    };
 
     handleChange = field => e => {
         e.preventDefault();
         this.setState({[field]: e.target.value});
-    }
+    };
 
     handleLogin = e => {
         e.preventDefault();
         const { username, password } = this.state;
 
         this.props.handleLogin(username, password);
-    }
+    };
 
     render() {
         const { auth: { error } } = this.props;
