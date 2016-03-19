@@ -1,7 +1,6 @@
 /* eslint-env node */
 import 'babel/polyfill';
 import express from 'express';
-import cookieParser from 'cookie-parser';
 import _ from 'lodash';
 import path from 'path';
 import fs from 'fs';
@@ -14,6 +13,7 @@ import { createRedux } from './utils/redux';
 import fillStore from './utils/fillStore';
 import stringifyLocation from './utils/stringifyLocation';
 import { system_config } from './config.js';
+import cookieParser from 'cookie-parser';
 
 const env = system_config.System_type || 'development';
 const app = express();

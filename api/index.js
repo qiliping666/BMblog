@@ -53,14 +53,9 @@ app.post('/login', (req, res) => {
         if (err) {
             res.sendStatus(401);
         } else {
-            const HARDCODED_USER = {
-                id: vals[0].ID,
-                username: username,
-                password: vals[0].user_pass
-            };
             if (password === vals[0].user_pass) {
-                const token = generateToken(username, password);
-                const user = HARDCODED_USER;
+                const token = generateToken(username);
+                const user = username;
                 res.send({token, user});
             } else {
                 res.sendStatus(401);

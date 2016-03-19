@@ -6,6 +6,7 @@ import NavItem from './NavItem';
 import CSSModules from 'react-css-modules';
 import { language } from '../../i18n/select.js';
 
+
 @CSSModules(styles)
 export default class Header extends React.Component {
   static propTypes = {
