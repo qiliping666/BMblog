@@ -12,7 +12,7 @@ export default class Header extends React.Component {
     loggedIn: PropTypes.bool,
     logout: PropTypes.func.isRequired,
     router: PropTypes.object.isRequired
-  }
+  };
 
   handleLogout = e => {
     const { logout, router } = this.props;
@@ -20,7 +20,7 @@ export default class Header extends React.Component {
     e.preventDefault();
 
     logout(router);
-  }
+  };
 
   renderNavBar() {
     const { loggedIn } = this.props;

@@ -12,9 +12,9 @@ export default class ProfileRoute extends React.Component {
   static propTypes = {
     auth: PropTypes.object.isRequired,
     saveProfile: PropTypes.func.isRequired
-  }
+  };
 
-  saveProfile = profile => this.props.saveProfile(profile)
+  saveProfile = profile => this.props.saveProfile(profile);
 
   render() {
     const { auth: { profile } } = this.props;

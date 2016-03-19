@@ -8,7 +8,7 @@ import { language } from '../../i18n/select.js';
 export default class SinglePost extends React.Component {
   static propTypes = {
     post: PropTypes.object
-  }
+  };
 
   render() {
     const { post } = this.props;

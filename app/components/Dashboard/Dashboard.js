@@ -12,11 +12,11 @@ export default class Dashboard extends React.Component {
     publishedPosts: PropTypes.array.isRequired,
     togglePublishPost: PropTypes.func.isRequired,
     unpublishedPosts: PropTypes.array.isRequired
-  }
+  };
 
   togglePublishPost = (id, status) => {
     this.props.togglePublishPost(id, status);
-  }
+  };
 
   render() {
     const { publishedPosts, unpublishedPosts } = this.props;

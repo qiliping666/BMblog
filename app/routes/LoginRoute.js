@@ -12,16 +12,16 @@ export default class LoginRoute extends React.Component {
   static propTypes = {
     auth: PropTypes.object.isRequired,
     login: PropTypes.func.isRequired
-  }
+  };
 
   static contextTypes = {
     router: React.PropTypes.object
-  }
+  };
 
-  handleLogin = (email, password) => {
+  handleLogin = (username, password) => {
     const router = this.context.router;
-    this.props.login(email, password, router);
-  }
+    this.props.login(username, password, router);
+  };
 
   render() {
     return (

@@ -12,17 +12,17 @@ export default class SignupRoute extends React.Component {
   static propTypes = {
     auth: PropTypes.object.isRequired,
     signup: PropTypes.func.isRequired
-  }
+  };
 
   static contextTypes = {
     router: React.PropTypes.object
-  }
+  };
 
-  handleSubmit = (email, password) => {
+  handleSubmit = (username, password) => {
     const router = this.context.router;
 
-    this.props.signup(email, password, router);
-  }
+    this.props.signup(username, password, router);
+  };
 
   render() {
     return (

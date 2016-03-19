@@ -1,5 +1,5 @@
 /* eslint-env browser */
-import { canUseDOM } from 'react/lib/ExecutionEnvironment';
+//import { canUseDOM } from 'react/lib/ExecutionEnvironment';
 
 let cookie = {
   set({ name, value = '', path = '/', domain = '', expires = '' }) {

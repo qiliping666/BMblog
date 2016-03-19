@@ -16,7 +16,7 @@ export default class DashboardRoute extends React.Component {
   static propTypes = {
     posts: PropTypes.array.isRequired,
     savePost: PropTypes.func.isRequired
-  }
+  };
 
   static fillStore(redux) {
     return redux.dispatch(fetchPosts());
@@ -29,7 +29,7 @@ export default class DashboardRoute extends React.Component {
       ...post,
       published: !status
     });
-  }
+  };
 
   render() {
     const unpublishedPosts = this.props.posts;

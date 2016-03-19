@@ -11,7 +11,7 @@ export default class PostsView extends Component {
     dispatch: PropTypes.func.isRequired,
     params: PropTypes.object,
     posts: PropTypes.object
-  }
+  };
 
   static fillStore(redux, props) {
     return redux.dispatch(fetchPost(props.params.id));

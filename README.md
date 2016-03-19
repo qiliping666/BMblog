@@ -27,6 +27,7 @@ npm install
 
 ### Production
 ```bash
+make
 npm start
 ```
 
@@ -58,6 +59,11 @@ npm install
 ```
 ###启动BMblog
 ```bash
+make
 npm start
 ```
 在浏览器中输入[http://localhost:3000/](http://localhost:3000/)并打开，即可进入BMblog.
+
+## 版本更新记录
+v0.0.5 alpha 2016年03月19日12:11:23
+取消了"postinstall": "make".

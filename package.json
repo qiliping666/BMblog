@@ -17,8 +17,7 @@
   "scripts": {
     "start": "babel-node ./api & node . & wait",
     "pretest": "make lint",
-    "test": "make test",
-    "postinstall": "make"
+    "test": "make test"
   },
   "dependencies": {
     "async": "^1.5.2",

@@ -20,6 +20,7 @@ export default class PostsList extends React.Component {
               <div key={post.id}>
                 <Link to={`/posts/${post.id}`}>
                   <h2 className="post-header-link">{post.title}</h2>
+                    <div>{post.content}</div>
                 </Link>
               </div>
             );

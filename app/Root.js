@@ -15,7 +15,7 @@ const store = createRedux((process.env.NODE_ENV === 'production')
 export default class Root extends React.Component {
   static propTypes = {
     history: React.PropTypes.object.isRequired
-  }
+  };
 
   render() {
     return (

@@ -12,11 +12,11 @@ export default class PostEditor extends React.Component {
     onPublish: PropTypes.func.isRequired,
     onSave: PropTypes.func.isRequired,
     post: PropTypes.object
-  }
+  };
 
   state = {
     post: { ...this.props.post }
-  }
+  };
 
   componentWillReceiveProps(newProps) {
     this.setState({
@@ -29,12 +29,12 @@ export default class PostEditor extends React.Component {
   handleSave = (e) => {
     e.preventDefault();
     this.props.onSave(this.state.post);
-  }
+  };
 
   handlePublish = (e) => {
     e.preventDefault();
     this.props.onPublish(this.state.post);
-  }
+  };
 
   handleChange = field => event => {
     this.setState({
@@ -43,7 +43,7 @@ export default class PostEditor extends React.Component {
         [field]: event.target.value
       }
     });
-  }
+  };
 
   render() {
     const { title, content } = this.state.post;

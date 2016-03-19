@@ -11,7 +11,7 @@ export default class PostsList extends Component {
   static propTypes = {
     dispatch: PropTypes.func.isRequired,
     posts: PropTypes.array
-  }
+  };
 
   static fillStore(redux) {
     return redux.dispatch(fetchPosts());

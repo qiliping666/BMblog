@@ -15,7 +15,7 @@ export default class PostsEdit extends React.Component {
     params: PropTypes.object,
     posts: PropTypes.object,
     savePost: PropTypes.func.isRequired
-  }
+  };
 
   static fillStore(redux, props) {
     if (props.params.id) {
@@ -25,11 +25,11 @@ export default class PostsEdit extends React.Component {
 
   handleSave = (post) => {
     this.props.savePost(post);
-  }
+  };
 
   handlePublish = (post) => {
     this.props.savePost({ ...post, published: true });
-  }
+  };
 
   render() {
     let post;
