@@ -36,8 +36,8 @@ app.use(jwt({
     );
 }));
 
-function generateToken(email, password) {
-    const payload = {email, password};
+function generateToken(username, password) {
+    const payload = {username, password};
     return jwtToken.sign(payload, config.token.secret, {
         expiresInMinutes: config.token.expires
     });

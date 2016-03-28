@@ -22,7 +22,7 @@ Some features:
 _make.exe是编译BMblog必需的软件，请防止杀毒软件自动删除._
 ## Running
 ```bash
-npm install
+sudo npm install
 ```
 
 ### Production
@@ -40,8 +40,8 @@ make dev
 
 ### Remake
 ```bash
+sudo make
 rm -rf public app/server-bundle.js
-make
 npm start
 ```
 
