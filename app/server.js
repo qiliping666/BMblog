@@ -30,9 +30,8 @@ app.use((req, res, next) => {
         <routes />
       </Provider>
   );
-  const initialState = JSON.stringify(store.getState());
   const blog_title = system_config.blog_title;
-  res.send(template({ html, initialState, env, blog_title }));
+  res.send(template({ html, env, blog_title }));
 });
 
 app.listen(system_config.HTTP_server_port);
