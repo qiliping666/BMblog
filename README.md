@@ -8,7 +8,8 @@ BMblog使用MySQL数据库,前端使用React框架,后端采用REST API service.
 Use:
 [React](http://facebook.github.io/react/),
 [Redux](http://rackt.github.io/redux/),
-[React Router](http://rackt.github.io/react-router/),
+[React Router](https://github.com/reactjs/react-router),
+[Material-UI](https://github.com/callemall/material-ui),
 [Babel](https://babeljs.io/) and
 [Webpack](http://webpack.github.io/).
 
@@ -17,7 +18,6 @@ Some features:
 - Token-based authorization with [JWT](https://www.npmjs.com/package/jsonwebtoken)
 - Markdown editor of posts with [marked](https://www.npmjs.com/package/marked)
 - Modular CSS with [React CSS Modules](https://github.com/gajus/react-css-modules)
-- API mock with [JSON server](https://www.npmjs.com/package/json-server)
 
 _make.exe是编译BMblog必需的软件，请防止杀毒软件自动删除._
 ## Running
@@ -40,8 +40,8 @@ make dev
 
 ### Remake
 ```bash
-sudo make
-rm -rf public app/server-bundle.js
+make clean
+make
 npm start
 ```
 

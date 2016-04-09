@@ -3,6 +3,7 @@ import styles from './styles.styl';
 import React, { PropTypes } from 'react';
 import CSSModules from 'react-css-modules';
 import { language } from '../../i18n/select.js';
+import { markdown } from 'markdown';
 
 @CSSModules(styles)
 export default class SinglePost extends React.Component {
@@ -15,13 +16,11 @@ export default class SinglePost extends React.Component {
 
     if (!post) return null;
 
-    const { title, content, userId } = post;
-
     return (
       <div styleName="wrapper">
-        <div styleName="title">{title}</div>
-        <p>{content}</p>
-        <small>{language.written_by} {userId}</small>
+        <div styleName="title">{post.post_title}</div>
+          <p dangerouslySetInnerHTML={{__html:markdown.toHTML(post.post_content)}}></p>
+        <small>{language.written_by} {post.post_author}</small>
       </div>
     );
   }

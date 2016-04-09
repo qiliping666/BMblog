@@ -9,16 +9,16 @@ export default class ProfileEdit extends React.Component {
   static propTypes = {
     profile: PropTypes.object,
     saveProfile: PropTypes.func.isRequired
-  }
+  };
 
   state = {
     profile: { ...this.props.profile }
-  }
+  };
 
   handleSubmit = e => {
     e.preventDefault();
     this.props.saveProfile(this.state.profile);
-  }
+  };
 
   handleChange = field => e => {
     e.preventDefault();
@@ -29,7 +29,7 @@ export default class ProfileEdit extends React.Component {
         [field] : e.target.value
       }
     });
-  }
+  };
 
   render() {
     const { firstname, lastname } = this.state.profile;

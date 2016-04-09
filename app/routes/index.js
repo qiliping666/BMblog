@@ -5,7 +5,6 @@ import SignupRoute from './SignupRoute';
 import LoginRoute from './LoginRoute';
 import ProfileRoute from './ProfileRoute';
 import NotFound from '../components/NotFound';
-import redirectBackAfter from '../utils/redirectBackAfter';
 import fillStore from '../utils/fillStore';
 import DashboardRoute from './DashboardRoute';
 import * as Posts from './Posts';
@@ -44,7 +43,7 @@ export default (store, client) => {
       const loggedIn = !!store.getState().auth.token;
 
       if (route.requireAuth && !loggedIn) {
-        transition.to(...redirectBackAfter('/login', nextState));
+        //transition.to(...redirectBackAfter('/login', nextState));
       } else if (client) {
         fillStore(store, nextState, [route.component]);
       }

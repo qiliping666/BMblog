@@ -21,5 +21,6 @@ module.exports = {
   "First_name": "名",
   "Last_name": "姓",
   "written_by": "作者:",
-  "Username": "用户名"
+  "Username": "用户名",
+  "post_not_exist": "此文章不存在"
 };

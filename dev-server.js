@@ -1,4 +1,3 @@
-/* eslint-env node */
 import webpack from 'webpack';
 import devConfig from './webpack/dev.config.babel';
 import prodConfig from './webpack/prod.config.babel';

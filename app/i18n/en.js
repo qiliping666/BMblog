@@ -21,5 +21,6 @@ module.exports = {
   "First_name": "First name",
   "Last_name": "Last name",
   "written_by": "written by",
-  "Username": "Username"
+  "Username": "Username",
+  "post_not_exist": "The post does not exist."
 };

@@ -16,7 +16,6 @@ import {
 } from '../constants/actions';
 
 import cookie from '../utils/cookie';
-import redirectBackAfter from '../utils/redirectBackAfter';
 import axios from 'axios';
 import getHeaders from '../utils/getHeaders.js';
 import { language } from '../i18n/select.js';
@@ -48,7 +47,7 @@ export function signup(email, password, router) {
       dispatch({ type: FETCH_PROFILE_SUCCESS, user });
       dispatch({ type: SIGNUP_SUCCESS });
       // TODO: don't do it here.
-      router.transitionTo('/profile');
+      //router.transitionTo('/profile');
     } catch (error) {
       dispatch({
         type: SIGNUP_FAILURE,
@@ -93,7 +92,7 @@ export function logout(router) {
 
     dispatch({ type: LOGOUT });
 
-    router.transitionTo(...redirectBackAfter('/login', router.state));
+    //router.transitionTo(...redirectBackAfter('/login', router.state));
   };
 }
 
@@ -105,7 +104,7 @@ export function fetchProfile() {
       if (!token) { return; }
 
       const headers = getHeaders(token);
-      const user = (await axios.get(`${baseUrl}/profile`, { headers })).data;
+      //const user = (await axios.get(`${baseUrl}/profile`, { headers })).data;
       dispatch({ type: FETCH_PROFILE_SUCCESS, user });
     } catch (error) {
       dispatch({ type: FETCH_PROFILE_FAILURE, error });

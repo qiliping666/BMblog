@@ -5,6 +5,9 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import Header from '../components/Header/Header';
 import { fetchProfile, logout } from '../actions/auth';
+import injectTapEventPlugin from "react-tap-event-plugin";
+
+injectTapEventPlugin();
 
 @connect(state => ({
   auth: state.auth,
@@ -22,9 +25,9 @@ export default class App extends React.Component {
     router: PropTypes.object
   };
 
-  static fillStore(redux) {
-    return redux.dispatch(fetchProfile());
-  }
+  // static fillStore(redux) {
+  //   return redux.dispatch(fetchProfile());
+  // }
 
   render() {
     const {
