@@ -11,23 +11,19 @@ injectTapEventPlugin();
 
 @connect(state => ({
   auth: state.auth,
-  router: state.router
+  router: state.router,
+  history: state.history
 }))
 export default class App extends React.Component {
   static propTypes = {
     auth: PropTypes.object.isRequired,
     children: PropTypes.element.isRequired,
     dispatch: PropTypes.func.isRequired,
-    error: PropTypes.string
+    error: PropTypes.string,
+    router: PropTypes.object.isRequired,
+    location: PropTypes.object.isRequired,
+    history: PropTypes.object.isRequired
   };
-
-  static contextTypes = {
-    router: PropTypes.object
-  };
-
-  // static fillStore(redux) {
-  //   return redux.dispatch(fetchProfile());
-  // }
 
   render() {
     const {
@@ -39,7 +35,9 @@ export default class App extends React.Component {
       <div>
         <Header
           loggedIn={!!auth.token}
-          router={this.context.router}
+          router={this.props.router}
+          history={this.props.history}
+          location={this.props.location}
           {...bindActionCreators({ logout }, dispatch)}
         />
 

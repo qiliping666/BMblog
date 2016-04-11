@@ -3,7 +3,7 @@ import styles from './styles.styl';
 import React, {PropTypes} from 'react';
 import {Link} from 'react-router';
 import CSSModules from 'react-css-modules';
-
+import Paper from 'material-ui/lib/paper';
 
 //截取字符串，多余的部分用...代替
 function setString(str, len) {
@@ -36,12 +36,12 @@ export default class PostsList extends React.Component {
                     .filter(item => item.post_type == "post")
                     .map(post => {
                         return (
-                            <div key={post.ID}>
+                            <Paper styleName="post" zDepth={1} key={post.ID}>
                                 <Link to={`/posts/${post.ID}`}>
                                     <h2 className="post-header-link">{post.post_title}</h2>
                                     <div>{setString(post.post_content, 200)}</div>
                                 </Link>
-                            </div>
+                            </Paper>
                         );
                     })}
             </div>

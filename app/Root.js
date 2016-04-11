@@ -21,7 +21,6 @@ export default class Root extends React.Component {
         <Router
           history={browserHistory}
           routes={routes(store, true)}
-
           onUpdate={function() {
             store.dispatch(routerStateChange(this.state));
           }}
