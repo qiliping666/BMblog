@@ -21,17 +21,20 @@ export default class Header extends React.Component {
     static propTypes = {
         loggedIn: PropTypes.bool,
         logout: PropTypes.func.isRequired,
-        router: PropTypes.object.isRequired,
-        location: React.PropTypes.object,
-        history: React.PropTypes.object
+        location: PropTypes.object,
+        history: PropTypes.object
+    };
+
+    static contextTypes: React.ValidationMap<any> = {
+        router: React.PropTypes.object
     };
 
     handleLogout = e => {
-        const {logout, router} = this.props;
+        const {logout} = this.props;
 
         e.preventDefault();
 
-        logout(router);
+        logout(this.context.router);
     };
 
     renderNavBar() {
@@ -96,18 +99,21 @@ export default class Header extends React.Component {
     };
 
     handleRequestChangeList(event, value) {
-        this.props.history.push(value);
+        //this.props.history.push(value);
         this.setState({
             leftNavOpen: false
         });
     };
 
     render() {
+
+
         const {
             history,
             location,
             children,
         } = this.props;
+
 
         var leftNavOpen = false;
 
@@ -132,8 +138,13 @@ export default class Header extends React.Component {
             <div>
                 <AppBar
                     title="BMblog"
-                    onTitleTouchTap={function() {  this.props.history.push('/'); }}
-                    onLeftIconButtonTouchTap={this.handleChangeRequestLeftNav}
+                    onTitleTouchTap={
+                        function() {
+                          this.context.router.push("/");
+                        }
+                    }
+                    onLeftIconButtonTouchTap={this.handleChangeRequestLeftNav.bind(this)}
+                    onLeftIconButtonTouchTap={open=>this.handleChangeRequestLeftNav(open)}
                     iconElementRight={
                   <IconMenu
                     iconButtonElement={
