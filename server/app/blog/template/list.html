@@ -1,0 +1,93 @@
+{% extends 'layout.html' %}
+
+{% block title %}{{ options.blogname }} - {{ options.blogdescription }}{% endblock %}
+
+{% block content %}
+
+<div class="blog-header">
+    <h1 class="blog-title"><a href="/">{{ options.blogname }}</a></h1>
+    <p class="lead blog-description">{{ options.blogdescription }}</p>
+</div>
+
+<div class="row">
+
+    <div class="col-sm-8 blog-main">
+        {% for post in posts %}
+        <div class="blog-post">
+            <a href="/{{ post.ID }}.html"><h2 class="blog-post-title">{{ post.post_title }}</h2></a>
+            <p class="blog-post-meta">{{ post.post_date|date('Y-m-d') }} by <a href="/about">{{ post.display_name }}</a>
+            </p>
+            {% autoescape %}{{ post.post_content }}{% endautoescape %}
+        </div>
+        {% endfor %}
+        {% if (posts_all!=1) %}
+        <div class="pagination" id="all_{{ posts_all.length }}_{{ posts_now }}_{{ posts_type }}">
+            <ul>
+                <li class="previous">
+                    <a href="#" class="fui-arrow-left"></a>
+                </li>
+                {% for page in posts_all %}
+                {% if (page<=5) %}
+                {% if (page==1) %}
+                <li><a href="{{ posts_type }}/">1</a></li>
+                {% else %}
+                <li><a href="{{ posts_type }}/page/{{ page }}">{{ page }}</a></li>
+                {% endif %}
+                {% endif %}
+                {% endfor %}
+
+                {% if (posts_all>5) %}
+                <li class="pagination-dropdown dropup">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                        <i class="fui-triangle-up"></i>
+                    </a>
+                    <ul class="dropdown-menu">
+                        {% for page in posts_all %}
+                        {% if (page>5) %}
+                        <li><a href="{{ posts_type }}/page/{{ page }}">{{ page }}</a></li>
+                        {% endif %}
+                        {% endfor %}
+                    </ul>
+                </li>
+                {% endif %}
+
+                <li class="next">
+                    <a href="#" class="fui-arrow-right"></a>
+                </li>
+            </ul>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="col-sm-3 col-sm-offset-1 blog-sidebar">
+        <div class="sidebar-module sidebar-module-inset">
+            <h4>博主留言</h4>
+            <p>这只是一个纯粹的技术博客，博文不含商业性内容，编程视频教程仅对朋友开放，用于讨论编程技术。不涉及任何政治、经济、敏感话题，请勿恶意攻击。</p>
+        </div>
+        <div class="sidebar-module">
+            <h4>热门标签</h4>
+            <ol class="list-unstyled">
+                {% for post_tag_one in post_tag %}
+                <li><a href="/tag/{{ post_tag_one.tag_name }}"> {{ post_tag_one.tag_name }}</a></li>
+                {% endfor %}
+            </ol>
+        </div>
+        <div class="sidebar-module">
+            <h4>文章分类</h4>
+            <ol class="list-unstyled">
+                {% for post_tag_one in post_category %}
+                <li><a href="/{{ post_tag_one.category_name }}"> {{ post_tag_one.category_name }}</a></li>
+                {% endfor %}
+            </ol>
+        </div>
+        <div class="sidebar-module">
+            <h4>友情链接</h4>
+            <ol class="list-unstyled">
+                {% for link in friendly_link %}
+                <li><a href="{{link.link_url}}" target="{{ link.link_target }}">{{ link.link_name }}</a></li>
+                {% endfor %}
+            </ol>
+        </div>
+    </div>
+</div>
+{% endblock %}

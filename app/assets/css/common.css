@@ -1,0 +1,12 @@
+html {
+    font-family: "Microsoft YaHei",微软雅黑,sans-serif; !important;
+}
+
+body {
+    font-family: "Microsoft YaHei",微软雅黑,sans-serif; !important;
+}
+
+ul, menu, dir {
+    -webkit-padding-start: 0;
+    -webkit-margin-after: 0;
+}

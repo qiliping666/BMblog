@@ -1,0 +1,26 @@
+{% extends 'layout.html' %}
+
+{% block title %}{{ post.post_title }} - {{ options.blogname }}{% endblock %}
+
+{% block content %}
+<h1>{{ post.post_title }}</h1>
+<p>发布时间：{{ post.post_date|date('Y-m-d') }} 更新时间：{{ post.post_modified|date('Y-m-d') }}</p>
+{% autoescape %}{{ post.post_content }}{% endautoescape %}
+
+<p>评论</p>
+{% for comment in post_comment %}
+<p>----{{ comment.comment_ID }}</p>
+<p>{{ comment.comment_author }}</p>
+<p>{{ comment.comment_content }}</p>
+
+{% for comment_back in post_comment_back %}
+{% if (comment_back.comment_parent == comment.comment_ID) %}
+<p style="margin-left: 100px">回复 </p>
+<p style="margin-left: 100px">{{ comment_back.comment_author }}</p>
+<p style="margin-left: 100px">{{ comment_back.comment_content }}</p>
+{% endif %}
+{% endfor %}
+
+<p>----</p>
+{% endfor %}
+{% endblock %}

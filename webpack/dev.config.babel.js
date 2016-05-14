@@ -13,8 +13,7 @@ module.exports = {
     : 'eval-cheap-module-source-map',
   context: path.join(__dirname, '../app'),
   entry: [
-    '../app/client',
-    'webpack-hot-middleware/client'
+    '../app/assets',
   ],
 
   output: {

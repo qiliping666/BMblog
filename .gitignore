@@ -1,5 +1,4 @@
-/public/
-/app/server-bundle.js
-node_modules
+# Created by .ignore support plugin (hsz.mobi)
+.DS_Store
 .idea
-*.log
+node_modules
