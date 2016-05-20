@@ -1,5 +1,4 @@
 import Koa from 'koa';
-import Koa_router from 'koa-router';
 import Koa_logger from 'koa-logger';
 import Koa_favicon from 'koa-favicon';
 import Koa_convert from 'koa-convert';
@@ -9,13 +8,12 @@ import Koa_Nunjucks from 'koa-nunjucks-2';
 import {system_config} from './config.js';
 import path from 'path';
 import serve from 'koa-static';
-import blog_routes from './api/routes/blog-routes';
+import main_routes from './api/routes/main-routes';
 
 //import assemble from 'assemble';
 
 //初始化
 const app = new Koa();
-const router = new Koa_router();
 const body_parser = new Koa_body_parser();
 
 const env = system_config.System_type || 'development';//判断开发模式
@@ -34,21 +32,13 @@ app //初始化中间件
             autoescape: false
         }
     }))
-    // .use(async(ctx, next) => { //引入路由
-    //     // api server through koa-router
-    //     if (ctx.path.match(/^\/api/)) {
-    //         return await require('./api/routes/api-routes').router()(ctx, next)
-    //     }
-    //     await blog_routes;
-    // })
-    .use(blog_routes.routes())
-    // 404
+    .use(main_routes.routes())
+    .use(main_routes.allowedMethods())
+    //404
     .use((ctx) => {
         ctx.status = 404;
         ctx.body = "没找到这个页面 - 404";
-    })
-    .use(router.routes())
-    .use(router.allowedMethods());
+    });
 
 // logger
 if (env === 'development') {
