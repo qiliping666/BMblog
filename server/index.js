@@ -17,44 +17,48 @@ import {
 } from './api/db/mysql.js';
 import {setString} from './app/tool/common_tool.js';
 import path from 'path';
-import swig from 'swig';
 import serve from 'koa-static';
 import marked from 'marked';
 import {CheckPassword} from './app/tool/ass.js';
 import moment from 'moment';
 //import assemble from 'assemble';
 
+//初始化
 const app = new Koa();
 const router = new Koa_router();
 const body_parser = new Koa_body_parser();
-//const env = system_config.System_type || 'development';//判断开发模式
+
+const env = system_config.System_type || 'development';//判断开发模式
 const mysql_prefix = system_config.mysql_prefix;//数据库前缀
 moment.locale('zh-cn');
 
-app
-    .use(Koa_convert(body_parser))
-    .use(Koa_convert(Koa_json()))
+app //初始化中间件
+    .use(Koa_convert(body_parser))  //获取表单信息中间件
+    .use(Koa_convert(Koa_json()))   //json格式中间件
     .use(Koa_convert(Koa_logger()))
-    .use(Koa_convert(Koa_favicon(path.join(__dirname, '../app/assets/img/favicon.ico'))))
-    .use(Koa_convert(serve(path.join(__dirname, '../app'))))
-    .use((ctx, next) => {
+    .use(Koa_convert(Koa_favicon(path.join(__dirname, '../app/assets/img/favicon.ico'))))  //设置favicon.ico路径
+    .use(Koa_convert(serve(path.join(__dirname, '../app')))) //设置静态资源路径
+    .use((ctx, next) => {   //输出执行时间
         const start = new Date();
         return next().then(() => {
             const ms = new Date() - start;
             console.log(`${ctx.method} ${ctx.url} - ${ms}ms`);
         });
     })
-    .use(Koa_Nunjucks({
+    .use(Koa_Nunjucks({  //Nunjucks模板引擎配置
         ext: 'html',
         path: path.join(__dirname, 'app/blog/template'),
         nunjucksConfig: {
-            autoescape: true
+            autoescape: false
         }
     }));
 
 router
     .get('/', (ctx) => {
-        //var template = swig.compileFile(path.join(__dirname, 'app/blog/template/list.html'));
+        
+        if(env == "production"){
+            //预留
+        }
 
         var sql = {
             options: "SELECT `option_name`,`option_value` FROM `bm_options` WHERE `option_id` < 7",
@@ -100,17 +104,12 @@ router
                     friendly_link: result.friendly_link
                 };
 
-                // nunjucksDate.setDefaultFormat('MMMM Do YYYY, h:mm:ss a');
-                // var env = new Koa_Nunjucks.Environment();
-                // nunjucksDate.install(env, 'mySpecialDateFilter');
                 ctx.render('list', posts);
-                //ctx.body = template(posts);
             }
         });
     })
 
     .get('/page/:num', (ctx) => {
-        var template = swig.compileFile(path.join(__dirname, 'app/blog/template/list.html'));
         var limit = parseInt((parseInt(ctx.params.num) - 1) * 10) + "," + 10;
         var sql = {
             options: "SELECT `option_name`,`option_value` FROM `bm_options` WHERE `option_id` < 7",
@@ -155,13 +154,12 @@ router
                     friendly_link: result.friendly_link
                 };
 
-                ctx.body = template(posts);
+                ctx.render('list', posts);
             }
         });
     })
 
     .get('/:id.html', ctx => {
-        var template = swig.compileFile(path.join(__dirname, 'app/blog/template/post.html'));
 
         var sql = {
             options: "SELECT `option_name`,`option_value` FROM `bm_options` WHERE `option_id` < 7",
@@ -196,7 +194,7 @@ router
                     friendly_link: result.friendly_link
                 };
 
-                ctx.body = template(posts);
+                ctx.render('post', posts);
             });
         } else if (ctx.params.id > 582) {
             return querys(sql).then((result) => {
@@ -221,7 +219,7 @@ router
                     friendly_link: result.friendly_link
                 };
 
-                ctx.body = template(posts);
+                ctx.render('post', posts);
             });
         } else {
             ctx.throw(404, '未找该页面。');
@@ -229,17 +227,11 @@ router
     })
 
     .get('/admin', (ctx) => {
-        //var template = swig.compileFile(path.join(__dirname, 'app/blog/template/admin/index.html'));
-
-        //var template = nunjucks.render('index', { foo: 'bar' });
         ctx.render('admin/index', {double: 'rainbow'});
-        //ctx.body = template();
-        // ctx.redirect('/admin/login');
     })
 
     .get('/admin/login', (ctx) => {
-        var template = swig.compileFile(path.join(__dirname, 'app/blog/template/admin/login.html'));
-        ctx.body = template();
+        ctx.render('admin/login');
     })
 
     .post('/admin/login', (ctx) => {
@@ -258,7 +250,7 @@ router
                             callback(err || "no_acc");
                         } else {
                             if (CheckPassword(ctx.request.body.password, result[0].user_pass)) {
-                                callback(err,result[0].ID); // 生成的ID会传给下一个任务
+                                callback(err, result[0].ID); // 生成的ID会传给下一个任务
                             } else {
                                 conn.rollback(); // 发生错误事务回滚
                                 callback(err || "no_acc");
@@ -302,7 +294,6 @@ router
     })
 
     .get('/:page', (ctx, next) => {
-        var template = swig.compileFile(path.join(__dirname, 'app/blog/template/post.html'));
 
         var sql = {
             options: "SELECT `option_name`,`option_value` FROM `bm_options` WHERE `option_id` < 7",
@@ -337,14 +328,12 @@ router
                     friendly_link: result.friendly_link
                 };
 
-                ctx.body = template(posts);
+                ctx.render('post', posts);
             }
         });
     })
 
     .get('/:page', (ctx) => {
-        var template = swig.compileFile(path.join(__dirname, 'app/blog/template/list.html'));
-
         var sql = {
             options: "SELECT `option_name`,`option_value` FROM `bm_options` WHERE `option_id` < 7",
             post: "SELECT * FROM `" + mysql_prefix + "posts` WHERE `ID` IN (SELECT `object_id` FROM `" + mysql_prefix + "term_relationships` WHERE `term_taxonomy_id` = (SELECT `term_taxonomy_id` FROM `" + mysql_prefix + "term_taxonomy` WHERE `term_id` = (SELECT `term_id` FROM `" + mysql_prefix + "terms` WHERE `name` = '" + ctx.params.page + "' OR `slug` = '" + ctx.params.page + "') AND `taxonomy` = 'category')) ORDER BY `bm_posts`.`ID` DESC LIMIT 10",
@@ -388,13 +377,12 @@ router
                     friendly_link: result.friendly_link
                 };
 
-                ctx.body = template(posts);
+                ctx.render('list', posts);
             }
         });
     })
 
     .get('/:page/page/:num', (ctx) => {
-        var template = swig.compileFile(path.join(__dirname, 'app/blog/template/list.html'));
         var limit = parseInt((parseInt(ctx.params.num) - 1) * 10) + "," + 10;
         var sql = {
             options: "SELECT `option_name`,`option_value` FROM `bm_options` WHERE `option_id` < 7",
@@ -439,13 +427,12 @@ router
                     friendly_link: result.friendly_link
                 };
 
-                ctx.body = template(posts);
+                ctx.render('list', posts);
             }
         });
     })
 
     .get('/tag/:name', (ctx) => {
-        var template = swig.compileFile(path.join(__dirname, 'app/blog/template/list.html'));
 
         var sql = {
             options: "SELECT `option_name`,`option_value` FROM `bm_options` WHERE `option_id` < 7",
@@ -490,13 +477,12 @@ router
                     friendly_link: result.friendly_link
                 };
 
-                ctx.body = template(posts);
+                ctx.render('list', posts);
             }
         });
     })
 
     .get('/tag/:name/page/:num', (ctx) => {
-        var template = swig.compileFile(path.join(__dirname, 'app/blog/template/list.html'));
         var limit = parseInt((parseInt(ctx.params.num) - 1) * 10) + "," + 10;
         var sql = {
             options: "SELECT `option_name`,`option_value` FROM `bm_options` WHERE `option_id` < 7",
@@ -541,7 +527,7 @@ router
                     friendly_link: result.friendly_link
                 };
 
-                ctx.body = template(posts);
+                ctx.render('list', posts);
             }
         });
     })

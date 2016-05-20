@@ -4,8 +4,8 @@
 
 {% block content %}
 <h1>{{ post.post_title }}</h1>
-<p>发布时间：{{ post.post_date|date('Y-m-d') }} 更新时间：{{ post.post_modified|date('Y-m-d') }}</p>
-{% autoescape %}{{ post.post_content }}{% endautoescape %}
+<p>发布时间：{{ post.post_date }} 更新时间：{{ post.post_modified }}</p>
+{{ post.post_content }}
 
 <p>评论</p>
 {% for comment in post_comment %}
