@@ -1,12 +1,25 @@
 html {
-    font-family: "Microsoft YaHei",微软雅黑,sans-serif; !important;
+    font-family: "Microsoft YaHei", 微软雅黑, sans-serif;
+!important;
 }
 
 body {
-    font-family: "Microsoft YaHei",微软雅黑,sans-serif; !important;
+    font-family: "Microsoft YaHei", 微软雅黑, sans-serif;
+!important;
 }
 
 ul, menu, dir {
     -webkit-padding-start: 0;
     -webkit-margin-after: 0;
+}
+
+.blog-footer {
+    text-align: center;
+}
+
+.login-form {
+    width: auto;
+    max-width: 500px;
+    padding: 1px 23px 20px;
+    margin: 50px auto;
 }

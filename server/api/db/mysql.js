@@ -4,11 +4,13 @@ import Q from 'q';
 import async from 'async';
 
 var pool = mysql.createPool({
+    //connectionLimit: 4,     //连接池最多可以创建的连接数
     host: system_config.mysql_host,
     user: system_config.mysql_user,
     password: system_config.mysql_password,
     database: system_config.mysql_database,
-    port: system_config.mysql_port
+    port: system_config.mysql_port,
+    insecureAuth: true
 });
 
 //对外接口返回Promise函数形式
@@ -125,7 +127,12 @@ export var querys_Tx = function (sql) {
     return Q.promise(function (resolve, reject) {
         async.waterfall(sql, function (err, results) {
             if (err) {
-                reject(err);
+                if(err == "no_acc"){
+                    err = {check:err};
+                    resolve(err);
+                }else{
+                    reject(err);
+                }
             } else {
                 resolve(results);
             }

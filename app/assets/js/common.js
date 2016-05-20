@@ -1,9 +1,16 @@
+//获取url中的参数
+function getUrlParam(name) {
+    var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
+    var r = window.location.search.substr(1).match(reg);  //匹配目标参数
+    if (r != null) return decodeURIComponent(r[2]);
+}
+
 $('document').ready(function () {
     $('pre').each(function (i, block) {
         hljs.highlightBlock(block);
     });
 
-    if($(".pagination").attr("id")){
+    if ($(".pagination").attr("id")) {
         var get_posts_nums = $(".pagination").attr("id").replace("all_", "").split("_");
         var posts_all = get_posts_nums[0];
         var now_pages = get_posts_nums[1];
@@ -29,5 +36,30 @@ $('document').ready(function () {
             }
         }
     }
+
+    //当登录按钮被按下
+    $("#log_in").click(function () {
+        $.ajax({
+            type: 'POST',
+            url: "/admin/login",
+            data: {
+                username: $("#login-name").val(),
+                password: $("#login-pass").val()
+            },
+            dataType: "json",
+            success: function (result) {
+                if (result.check == "ok"){
+                    alert("验证成功!");
+                } else if (result.check == "no_acc") {
+                    alert("用户名或密码不正确!");
+                }
+            },
+            error: function (err) {
+                console.log(err);
+                alert("通信发送错误,请检查网络连接.");
+            }
+        });
+    });
+
 
 });

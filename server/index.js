@@ -5,6 +5,8 @@ import Koa_favicon from 'koa-favicon';
 import Koa_convert from 'koa-convert';
 import Koa_json from 'koa-json';
 import Koa_body_parser from 'koa-bodyparser';
+import Koa_Nunjucks from 'koa-nunjucks-2';
+import nunjucksDate from 'nunjucks-date';
 import {system_config} from './config.js';
 import {
     query,
@@ -19,6 +21,8 @@ import path from 'path';
 import swig from 'swig';
 import serve from 'koa-static';
 import marked from 'marked';
+import {CheckPassword} from './app/tool/ass.js';
+//import nunjucks from 'nunjucks';
 //import assemble from 'assemble';
 
 const app = new Koa();
@@ -26,6 +30,10 @@ const router = new Koa_router();
 const body_parser = new Koa_body_parser();
 //const env = system_config.System_type || 'development';//判断开发模式
 const mysql_prefix = system_config.mysql_prefix;//数据库前缀
+
+// nunjucks.configure('./app/blog/template/', {
+//     autoescape: true
+// });
 
 app
     .use(Koa_convert(body_parser))
@@ -39,19 +47,26 @@ app
             const ms = new Date() - start;
             console.log(`${ctx.method} ${ctx.url} - ${ms}ms`);
         });
-    });
+    })
+    .use(Koa_Nunjucks({
+        ext: 'html',
+        path: path.join(__dirname, 'app/blog/template'),
+        nunjucksConfig: {
+            autoescape: true
+        }
+    }));
 
 router
     .get('/', (ctx) => {
-        var template = swig.compileFile(path.join(__dirname, 'app/blog/template/list.html'));
+        //var template = swig.compileFile(path.join(__dirname, 'app/blog/template/list.html'));
 
         var sql = {
-            options: "SELECT `option_name`,`option_value` FROM `yi_blog_options` WHERE `option_id` < 7",
-            post: "SELECT `yi_blog_posts`.`ID` ,`post_title`,`post_date`, `post_content`,`display_name` FROM `" + mysql_prefix + "blog_posts`,`" + mysql_prefix + "blog_users` WHERE `post_type` = 'post' AND `post_status` = 'publish' AND `post_author` = `yi_blog_users`.`ID` ORDER BY `yi_blog_posts`.`ID` DESC LIMIT 10",
-            post_all: "SELECT count(`yi_blog_posts`.`ID`) AS `posts_all` FROM `yi_blog_posts`,`yi_blog_users` WHERE `post_type` = 'post' AND `post_status` = 'publish' AND `post_author` = `yi_blog_users`.`ID`",
-            tag: "SELECT `name` AS `tag_name` FROM `yi_blog_terms` WHERE `term_id` IN ( SELECT * FROM (SELECT `term_id` FROM `yi_blog_term_taxonomy` WHERE `taxonomy` = 'post_tag' ORDER BY `count` DESC LIMIT 15) AS `term_id`)",
-            category: "SELECT `name` AS `category_name` FROM `yi_blog_terms` WHERE `term_id` in (SELECT `term_id` FROM `yi_blog_term_taxonomy` WHERE `taxonomy` = 'category' AND `count` != 0)",
-            friendly_link: "SELECT `link_url`,`link_name`,`link_target` FROM `yi_blog_links` WHERE `link_id` in (SELECT `object_id` FROM `yi_blog_term_relationships` WHERE `term_taxonomy_id` in (SELECT `term_id`  FROM `yi_blog_terms` WHERE `name` = '友情链接'))"
+            options: "SELECT `option_name`,`option_value` FROM `bm_options` WHERE `option_id` < 7",
+            post: "SELECT `bm_posts`.`ID` ,`post_title`,`post_date`, `post_content`,`display_name` FROM `" + mysql_prefix + "blog_posts`,`" + mysql_prefix + "blog_users` WHERE `post_type` = 'post' AND `post_status` = 'publish' AND `post_author` = `bm_users`.`ID` ORDER BY `bm_posts`.`ID` DESC LIMIT 10",
+            post_all: "SELECT count(`bm_posts`.`ID`) AS `posts_all` FROM `bm_posts`,`bm_users` WHERE `post_type` = 'post' AND `post_status` = 'publish' AND `post_author` = `bm_users`.`ID`",
+            tag: "SELECT `name` AS `tag_name` FROM `bm_terms` WHERE `term_id` IN ( SELECT * FROM (SELECT `term_id` FROM `bm_term_taxonomy` WHERE `taxonomy` = 'post_tag' ORDER BY `count` DESC LIMIT 15) AS `term_id`)",
+            category: "SELECT `name` AS `category_name` FROM `bm_terms` WHERE `term_id` in (SELECT `term_id` FROM `bm_term_taxonomy` WHERE `taxonomy` = 'category' AND `count` != 0)",
+            friendly_link: "SELECT `link_url`,`link_name`,`link_target` FROM `bm_links` WHERE `link_id` in (SELECT `object_id` FROM `bm_term_relationships` WHERE `term_taxonomy_id` in (SELECT `term_id`  FROM `bm_terms` WHERE `name` = '友情链接'))"
         };
 
         return querys(sql).then((result) => {
@@ -88,20 +103,25 @@ router
                     friendly_link: result.friendly_link
                 };
 
-                ctx.body = template(posts);
+                nunjucksDate.setDefaultFormat('MMMM Do YYYY, h:mm:ss a');
+                var env = new Koa_Nunjucks.Environment();
+                nunjucksDate.install(env, 'mySpecialDateFilter');
+                ctx.render('list', posts);
+                //ctx.body = template(posts);
             }
         });
     })
+
     .get('/page/:num', (ctx) => {
         var template = swig.compileFile(path.join(__dirname, 'app/blog/template/list.html'));
         var limit = parseInt((parseInt(ctx.params.num) - 1) * 10) + "," + 10;
         var sql = {
-            options: "SELECT `option_name`,`option_value` FROM `yi_blog_options` WHERE `option_id` < 7",
-            post: "SELECT `yi_blog_posts`.`ID` ,`post_title`,`post_date`, `post_content`,`display_name` FROM `" + mysql_prefix + "blog_posts`,`" + mysql_prefix + "blog_users` WHERE `post_type` = 'post' AND `post_status` = 'publish' AND `post_author` = `yi_blog_users`.`ID` ORDER BY `yi_blog_posts`.`ID` DESC LIMIT " + limit,
-            post_all: "SELECT count(`yi_blog_posts`.`ID`) AS `posts_all` FROM `yi_blog_posts`,`yi_blog_users` WHERE `post_type` = 'post' AND `post_status` = 'publish' AND `post_author` = `yi_blog_users`.`ID`",
-            tag: "SELECT `name` AS `tag_name` FROM `yi_blog_terms` WHERE `term_id` IN ( SELECT * FROM (SELECT `term_id` FROM `yi_blog_term_taxonomy` WHERE `taxonomy` = 'post_tag' ORDER BY `count` DESC LIMIT 15) AS `term_id`)",
-            category: "SELECT `name` AS `category_name` FROM `yi_blog_terms` WHERE `term_id` in (SELECT `term_id` FROM `yi_blog_term_taxonomy` WHERE `taxonomy` = 'category' AND `count` != 0)",
-            friendly_link: "SELECT `link_url`,`link_name`,`link_target` FROM `yi_blog_links` WHERE `link_id` in (SELECT `object_id` FROM `yi_blog_term_relationships` WHERE `term_taxonomy_id` in (SELECT `term_id`  FROM `yi_blog_terms` WHERE `name` = '友情链接'))"
+            options: "SELECT `option_name`,`option_value` FROM `bm_options` WHERE `option_id` < 7",
+            post: "SELECT `bm_posts`.`ID` ,`post_title`,`post_date`, `post_content`,`display_name` FROM `" + mysql_prefix + "blog_posts`,`" + mysql_prefix + "blog_users` WHERE `post_type` = 'post' AND `post_status` = 'publish' AND `post_author` = `bm_users`.`ID` ORDER BY `bm_posts`.`ID` DESC LIMIT " + limit,
+            post_all: "SELECT count(`bm_posts`.`ID`) AS `posts_all` FROM `bm_posts`,`bm_users` WHERE `post_type` = 'post' AND `post_status` = 'publish' AND `post_author` = `bm_users`.`ID`",
+            tag: "SELECT `name` AS `tag_name` FROM `bm_terms` WHERE `term_id` IN ( SELECT * FROM (SELECT `term_id` FROM `bm_term_taxonomy` WHERE `taxonomy` = 'post_tag' ORDER BY `count` DESC LIMIT 15) AS `term_id`)",
+            category: "SELECT `name` AS `category_name` FROM `bm_terms` WHERE `term_id` in (SELECT `term_id` FROM `bm_term_taxonomy` WHERE `taxonomy` = 'category' AND `count` != 0)",
+            friendly_link: "SELECT `link_url`,`link_name`,`link_target` FROM `bm_links` WHERE `link_id` in (SELECT `object_id` FROM `bm_term_relationships` WHERE `term_taxonomy_id` in (SELECT `term_id`  FROM `bm_terms` WHERE `name` = '友情链接'))"
         };
 
         return querys(sql).then((result) => {
@@ -142,17 +162,18 @@ router
             }
         });
     })
+
     .get('/:id.html', ctx => {
         var template = swig.compileFile(path.join(__dirname, 'app/blog/template/post.html'));
 
         var sql = {
-            options: "SELECT `option_name`,`option_value` FROM `yi_blog_options` WHERE `option_id` < 7",
+            options: "SELECT `option_name`,`option_value` FROM `bm_options` WHERE `option_id` < 7",
             post: "SELECT * FROM `" + mysql_prefix + "blog_posts` WHERE `ID` = " + ctx.params.id + " AND `post_type` = 'post' AND `post_status` = 'publish'",
-            comment: "SELECT * FROM `yi_blog_comments` WHERE `comment_post_ID` = " + ctx.params.id + " AND `comment_parent` = 0 ORDER BY `comment_ID` DESC",
-            comment_back: "SELECT * FROM `yi_blog_comments` WHERE `comment_post_ID` = " + ctx.params.id + " AND `comment_parent` != 0 ORDER BY `comment_ID` ASC",
-            tag: "SELECT `name` AS `tag_name` FROM `yi_blog_terms` WHERE `term_id` IN ( SELECT * FROM (SELECT `term_id` FROM `yi_blog_term_taxonomy` WHERE `taxonomy` = 'post_tag' ORDER BY `count` DESC LIMIT 15) AS `term_id`)",
-            category: "SELECT `name` AS `category_name` FROM `yi_blog_terms` WHERE `term_id` in (SELECT `term_id` FROM `yi_blog_term_taxonomy` WHERE `taxonomy` = 'category' AND `count` != 0)",
-            friendly_link: "SELECT `link_url`,`link_name`,`link_target` FROM `yi_blog_links` WHERE `link_id` in (SELECT `object_id` FROM `yi_blog_term_relationships` WHERE `term_taxonomy_id` in (SELECT `term_id`  FROM `yi_blog_terms` WHERE `name` = '友情链接'))"
+            comment: "SELECT * FROM `bm_comments` WHERE `comment_post_ID` = " + ctx.params.id + " AND `comment_parent` = 0 ORDER BY `comment_ID` DESC",
+            comment_back: "SELECT * FROM `bm_comments` WHERE `comment_post_ID` = " + ctx.params.id + " AND `comment_parent` != 0 ORDER BY `comment_ID` ASC",
+            tag: "SELECT `name` AS `tag_name` FROM `bm_terms` WHERE `term_id` IN ( SELECT * FROM (SELECT `term_id` FROM `bm_term_taxonomy` WHERE `taxonomy` = 'post_tag' ORDER BY `count` DESC LIMIT 15) AS `term_id`)",
+            category: "SELECT `name` AS `category_name` FROM `bm_terms` WHERE `term_id` in (SELECT `term_id` FROM `bm_term_taxonomy` WHERE `taxonomy` = 'category' AND `count` != 0)",
+            friendly_link: "SELECT `link_url`,`link_name`,`link_target` FROM `bm_links` WHERE `link_id` in (SELECT `object_id` FROM `bm_term_relationships` WHERE `term_taxonomy_id` in (SELECT `term_id`  FROM `bm_terms` WHERE `name` = '友情链接'))"
         };
 
         if (ctx.params.id <= 582) {
@@ -209,15 +230,89 @@ router
             ctx.throw(404, '未找该页面。');
         }
     })
+
+    .get('/admin', (ctx) => {
+        //var template = swig.compileFile(path.join(__dirname, 'app/blog/template/admin/index.html'));
+
+        //var template = nunjucks.render('index', { foo: 'bar' });
+        ctx.render('admin/index', {double: 'rainbow'});
+        //ctx.body = template();
+        // ctx.redirect('/admin/login');
+    })
+
+    .get('/admin/login', (ctx) => {
+        var template = swig.compileFile(path.join(__dirname, 'app/blog/template/admin/login.html'));
+        ctx.body = template();
+    })
+
+    .post('/admin/login', (ctx) => {
+        return query_once_start().then((conn) => {
+            var sql = [
+                function (callback) {
+                    conn.beginTransaction(function (err) {
+                        callback(err);
+                    });
+                },
+
+                function (callback) {
+                    conn.query("SELECT `user_pass`,`ID` FROM yidata.bm_users WHERE user_login = '" + ctx.request.body.username + "'", function (err, result) {
+                        if (err || result.length == 0) {
+                            conn.rollback(); // 发生错误事务回滚
+                            callback(err || "no_acc");
+                        } else {
+                            if (CheckPassword(ctx.request.body.password, result[0].user_pass)) {
+                                callback(err,result[0].ID); // 生成的ID会传给下一个任务
+                            } else {
+                                conn.rollback(); // 发生错误事务回滚
+                                callback(err || "no_acc");
+                            }
+                        }
+                    });
+                },
+
+                // function (last, callback) {
+                //     console.log(last);
+                //     conn.query('SELECT `user_pass`,`ID` FROM yidata.bm_users WHERE `ID` = ' + last, function (err, result) {
+                //         if (err) {
+                //             conn.rollback(); // 发生错误事务回滚
+                //             callback(err);
+                //         } else {
+                //             callback(err, result[0]); // 生成的ID会传给下一个任务
+                //         }
+                //     });
+                // },
+
+                function (result, callback) {
+                    conn.commit(function (err) {
+                        var check = {check: "ok", user_id: result};
+                        callback(err, check);
+                    });
+                }
+            ];
+
+            return querys_Tx(sql).then((result) => {
+                //释放连接
+                conn.release();
+                console.log(result);
+                if (result.length == 0) {
+                    ctx.throw(500, '服务器错误');
+                } else {
+                    ctx.set("Content-Type", "application/json;charset=utf-8");
+                    ctx.body = result;
+                }
+            });
+        });
+    })
+
     .get('/:page', (ctx, next) => {
         var template = swig.compileFile(path.join(__dirname, 'app/blog/template/post.html'));
 
         var sql = {
-            options: "SELECT `option_name`,`option_value` FROM `yi_blog_options` WHERE `option_id` < 7",
+            options: "SELECT `option_name`,`option_value` FROM `bm_options` WHERE `option_id` < 7",
             post: "SELECT * FROM `" + mysql_prefix + "blog_posts`  WHERE `post_type` = 'page' AND `post_status` = 'publish' AND `post_name` = '" + ctx.params.page + "'",
-            tag: "SELECT `name` AS `tag_name` FROM `yi_blog_terms` WHERE `term_id` IN ( SELECT * FROM (SELECT `term_id` FROM `yi_blog_term_taxonomy` WHERE `taxonomy` = 'post_tag' ORDER BY `count` DESC LIMIT 15) AS `term_id`)",
-            category: "SELECT `name` AS `category_name` FROM `yi_blog_terms` WHERE `term_id` in (SELECT `term_id` FROM `yi_blog_term_taxonomy` WHERE `taxonomy` = 'category' AND `count` != 0)",
-            friendly_link: "SELECT `link_url`,`link_name`,`link_target` FROM `yi_blog_links` WHERE `link_id` in (SELECT `object_id` FROM `yi_blog_term_relationships` WHERE `term_taxonomy_id` in (SELECT `term_id`  FROM `yi_blog_terms` WHERE `name` = '友情链接'))"
+            tag: "SELECT `name` AS `tag_name` FROM `bm_terms` WHERE `term_id` IN ( SELECT * FROM (SELECT `term_id` FROM `bm_term_taxonomy` WHERE `taxonomy` = 'post_tag' ORDER BY `count` DESC LIMIT 15) AS `term_id`)",
+            category: "SELECT `name` AS `category_name` FROM `bm_terms` WHERE `term_id` in (SELECT `term_id` FROM `bm_term_taxonomy` WHERE `taxonomy` = 'category' AND `count` != 0)",
+            friendly_link: "SELECT `link_url`,`link_name`,`link_target` FROM `bm_links` WHERE `link_id` in (SELECT `object_id` FROM `bm_term_relationships` WHERE `term_taxonomy_id` in (SELECT `term_id`  FROM `bm_terms` WHERE `name` = '友情链接'))"
         };
 
         return querys(sql).then((result) => {
@@ -249,16 +344,17 @@ router
             }
         });
     })
+
     .get('/:page', (ctx) => {
         var template = swig.compileFile(path.join(__dirname, 'app/blog/template/list.html'));
 
         var sql = {
-            options: "SELECT `option_name`,`option_value` FROM `yi_blog_options` WHERE `option_id` < 7",
-            post: "SELECT * FROM `" + mysql_prefix + "blog_posts` WHERE `ID` IN (SELECT `object_id` FROM `" + mysql_prefix + "blog_term_relationships` WHERE `term_taxonomy_id` = (SELECT `term_taxonomy_id` FROM `" + mysql_prefix + "blog_term_taxonomy` WHERE `term_id` = (SELECT `term_id` FROM `" + mysql_prefix + "blog_terms` WHERE `name` = '" + ctx.params.page + "' OR `slug` = '" + ctx.params.page + "') AND `taxonomy` = 'category')) ORDER BY `yi_blog_posts`.`ID` DESC LIMIT 10",
-            post_all: "SELECT count(`yi_blog_posts`.`ID`) AS `posts_all` FROM `" + mysql_prefix + "blog_posts` WHERE `ID` IN (SELECT `object_id` FROM `" + mysql_prefix + "blog_term_relationships` WHERE `term_taxonomy_id` = (SELECT `term_taxonomy_id` FROM `" + mysql_prefix + "blog_term_taxonomy` WHERE `term_id` = (SELECT `term_id` FROM `" + mysql_prefix + "blog_terms` WHERE `name` = '" + ctx.params.page + "' OR `slug` = '" + ctx.params.page + "') AND `taxonomy` = 'category'))",
-            tag: "SELECT `name` AS `tag_name` FROM `yi_blog_terms` WHERE `term_id` IN ( SELECT * FROM (SELECT `term_id` FROM `yi_blog_term_taxonomy` WHERE `taxonomy` = 'post_tag' ORDER BY `count` DESC LIMIT 15) AS `term_id`)",
-            category: "SELECT `name` AS `category_name` FROM `yi_blog_terms` WHERE `term_id` in (SELECT `term_id` FROM `yi_blog_term_taxonomy` WHERE `taxonomy` = 'category' AND `count` != 0)",
-            friendly_link: "SELECT `link_url`,`link_name`,`link_target` FROM `yi_blog_links` WHERE `link_id` in (SELECT `object_id` FROM `yi_blog_term_relationships` WHERE `term_taxonomy_id` in (SELECT `term_id`  FROM `yi_blog_terms` WHERE `name` = '友情链接'))"
+            options: "SELECT `option_name`,`option_value` FROM `bm_options` WHERE `option_id` < 7",
+            post: "SELECT * FROM `" + mysql_prefix + "blog_posts` WHERE `ID` IN (SELECT `object_id` FROM `" + mysql_prefix + "blog_term_relationships` WHERE `term_taxonomy_id` = (SELECT `term_taxonomy_id` FROM `" + mysql_prefix + "blog_term_taxonomy` WHERE `term_id` = (SELECT `term_id` FROM `" + mysql_prefix + "blog_terms` WHERE `name` = '" + ctx.params.page + "' OR `slug` = '" + ctx.params.page + "') AND `taxonomy` = 'category')) ORDER BY `bm_posts`.`ID` DESC LIMIT 10",
+            post_all: "SELECT count(`bm_posts`.`ID`) AS `posts_all` FROM `" + mysql_prefix + "blog_posts` WHERE `ID` IN (SELECT `object_id` FROM `" + mysql_prefix + "blog_term_relationships` WHERE `term_taxonomy_id` = (SELECT `term_taxonomy_id` FROM `" + mysql_prefix + "blog_term_taxonomy` WHERE `term_id` = (SELECT `term_id` FROM `" + mysql_prefix + "blog_terms` WHERE `name` = '" + ctx.params.page + "' OR `slug` = '" + ctx.params.page + "') AND `taxonomy` = 'category'))",
+            tag: "SELECT `name` AS `tag_name` FROM `bm_terms` WHERE `term_id` IN ( SELECT * FROM (SELECT `term_id` FROM `bm_term_taxonomy` WHERE `taxonomy` = 'post_tag' ORDER BY `count` DESC LIMIT 15) AS `term_id`)",
+            category: "SELECT `name` AS `category_name` FROM `bm_terms` WHERE `term_id` in (SELECT `term_id` FROM `bm_term_taxonomy` WHERE `taxonomy` = 'category' AND `count` != 0)",
+            friendly_link: "SELECT `link_url`,`link_name`,`link_target` FROM `bm_links` WHERE `link_id` in (SELECT `object_id` FROM `bm_term_relationships` WHERE `term_taxonomy_id` in (SELECT `term_id`  FROM `bm_terms` WHERE `name` = '友情链接'))"
         };
 
         return querys(sql).then((result) => {
@@ -304,12 +400,12 @@ router
         var template = swig.compileFile(path.join(__dirname, 'app/blog/template/list.html'));
         var limit = parseInt((parseInt(ctx.params.num) - 1) * 10) + "," + 10;
         var sql = {
-            options: "SELECT `option_name`,`option_value` FROM `yi_blog_options` WHERE `option_id` < 7",
-            post: "SELECT * FROM `" + mysql_prefix + "blog_posts` WHERE `ID` IN (SELECT `object_id` FROM `" + mysql_prefix + "blog_term_relationships` WHERE `term_taxonomy_id` = (SELECT `term_taxonomy_id` FROM `" + mysql_prefix + "blog_term_taxonomy` WHERE `term_id` = (SELECT `term_id` FROM `" + mysql_prefix + "blog_terms` WHERE `name` = '" + ctx.params.page + "' OR `slug` = '" + ctx.params.page + "') AND `taxonomy` = 'category')) ORDER BY `yi_blog_posts`.`ID` DESC LIMIT " + limit,
-            post_all: "SELECT count(`yi_blog_posts`.`ID`) AS `posts_all` FROM `" + mysql_prefix + "blog_posts` WHERE `ID` IN (SELECT `object_id` FROM `" + mysql_prefix + "blog_term_relationships` WHERE `term_taxonomy_id` = (SELECT `term_taxonomy_id` FROM `" + mysql_prefix + "blog_term_taxonomy` WHERE `term_id` = (SELECT `term_id` FROM `" + mysql_prefix + "blog_terms` WHERE `name` = '" + ctx.params.page + "' OR `slug` = '" + ctx.params.page + "') AND `taxonomy` = 'category'))",
-            tag: "SELECT `name` AS `tag_name` FROM `yi_blog_terms` WHERE `term_id` IN ( SELECT * FROM (SELECT `term_id` FROM `yi_blog_term_taxonomy` WHERE `taxonomy` = 'post_tag' ORDER BY `count` DESC LIMIT 15) AS `term_id`)",
-            category: "SELECT `name` AS `category_name` FROM `yi_blog_terms` WHERE `term_id` in (SELECT `term_id` FROM `yi_blog_term_taxonomy` WHERE `taxonomy` = 'category' AND `count` != 0)",
-            friendly_link: "SELECT `link_url`,`link_name`,`link_target` FROM `yi_blog_links` WHERE `link_id` in (SELECT `object_id` FROM `yi_blog_term_relationships` WHERE `term_taxonomy_id` in (SELECT `term_id`  FROM `yi_blog_terms` WHERE `name` = '友情链接'))"
+            options: "SELECT `option_name`,`option_value` FROM `bm_options` WHERE `option_id` < 7",
+            post: "SELECT * FROM `" + mysql_prefix + "blog_posts` WHERE `ID` IN (SELECT `object_id` FROM `" + mysql_prefix + "blog_term_relationships` WHERE `term_taxonomy_id` = (SELECT `term_taxonomy_id` FROM `" + mysql_prefix + "blog_term_taxonomy` WHERE `term_id` = (SELECT `term_id` FROM `" + mysql_prefix + "blog_terms` WHERE `name` = '" + ctx.params.page + "' OR `slug` = '" + ctx.params.page + "') AND `taxonomy` = 'category')) ORDER BY `bm_posts`.`ID` DESC LIMIT " + limit,
+            post_all: "SELECT count(`bm_posts`.`ID`) AS `posts_all` FROM `" + mysql_prefix + "blog_posts` WHERE `ID` IN (SELECT `object_id` FROM `" + mysql_prefix + "blog_term_relationships` WHERE `term_taxonomy_id` = (SELECT `term_taxonomy_id` FROM `" + mysql_prefix + "blog_term_taxonomy` WHERE `term_id` = (SELECT `term_id` FROM `" + mysql_prefix + "blog_terms` WHERE `name` = '" + ctx.params.page + "' OR `slug` = '" + ctx.params.page + "') AND `taxonomy` = 'category'))",
+            tag: "SELECT `name` AS `tag_name` FROM `bm_terms` WHERE `term_id` IN ( SELECT * FROM (SELECT `term_id` FROM `bm_term_taxonomy` WHERE `taxonomy` = 'post_tag' ORDER BY `count` DESC LIMIT 15) AS `term_id`)",
+            category: "SELECT `name` AS `category_name` FROM `bm_terms` WHERE `term_id` in (SELECT `term_id` FROM `bm_term_taxonomy` WHERE `taxonomy` = 'category' AND `count` != 0)",
+            friendly_link: "SELECT `link_url`,`link_name`,`link_target` FROM `bm_links` WHERE `link_id` in (SELECT `object_id` FROM `bm_term_relationships` WHERE `term_taxonomy_id` in (SELECT `term_id`  FROM `bm_terms` WHERE `name` = '友情链接'))"
         };
 
         return querys(sql).then((result) => {
@@ -355,12 +451,12 @@ router
         var template = swig.compileFile(path.join(__dirname, 'app/blog/template/list.html'));
 
         var sql = {
-            options: "SELECT `option_name`,`option_value` FROM `yi_blog_options` WHERE `option_id` < 7",
-            post: "SELECT * FROM `" + mysql_prefix + "blog_posts` WHERE `ID` IN (SELECT `object_id` FROM `" + mysql_prefix + "blog_term_relationships` WHERE `term_taxonomy_id` = (SELECT `term_taxonomy_id` FROM `" + mysql_prefix + "blog_term_taxonomy` WHERE `term_id` = (SELECT `term_id` FROM `" + mysql_prefix + "blog_terms` WHERE `name` = '" + ctx.params.name + "' OR `slug` = '" + ctx.params.name + "') AND `taxonomy` = 'post_tag')) ORDER BY `yi_blog_posts`.`ID` DESC LIMIT 10",
-            post_all: "SELECT count(`yi_blog_posts`.`ID`) AS `posts_all` FROM `" + mysql_prefix + "blog_posts` WHERE `ID` IN (SELECT `object_id` FROM `" + mysql_prefix + "blog_term_relationships` WHERE `term_taxonomy_id` = (SELECT `term_taxonomy_id` FROM `" + mysql_prefix + "blog_term_taxonomy` WHERE `term_id` = (SELECT `term_id` FROM `" + mysql_prefix + "blog_terms` WHERE `name` = '" + ctx.params.name + "' OR `slug` = '" + ctx.params.name + "') AND `taxonomy` = 'post_tag'))",
-            tag: "SELECT `name` AS `tag_name` FROM `yi_blog_terms` WHERE `term_id` IN ( SELECT * FROM (SELECT `term_id` FROM `yi_blog_term_taxonomy` WHERE `taxonomy` = 'post_tag' ORDER BY `count` DESC LIMIT 15) AS `term_id`)",
-            category: "SELECT `name` AS `category_name` FROM `yi_blog_terms` WHERE `term_id` in (SELECT `term_id` FROM `yi_blog_term_taxonomy` WHERE `taxonomy` = 'category' AND `count` != 0)",
-            friendly_link: "SELECT `link_url`,`link_name`,`link_target` FROM `yi_blog_links` WHERE `link_id` in (SELECT `object_id` FROM `yi_blog_term_relationships` WHERE `term_taxonomy_id` in (SELECT `term_id`  FROM `yi_blog_terms` WHERE `name` = '友情链接'))"
+            options: "SELECT `option_name`,`option_value` FROM `bm_options` WHERE `option_id` < 7",
+            post: "SELECT * FROM `" + mysql_prefix + "blog_posts` WHERE `ID` IN (SELECT `object_id` FROM `" + mysql_prefix + "blog_term_relationships` WHERE `term_taxonomy_id` = (SELECT `term_taxonomy_id` FROM `" + mysql_prefix + "blog_term_taxonomy` WHERE `term_id` = (SELECT `term_id` FROM `" + mysql_prefix + "blog_terms` WHERE `name` = '" + ctx.params.name + "' OR `slug` = '" + ctx.params.name + "') AND `taxonomy` = 'post_tag')) ORDER BY `bm_posts`.`ID` DESC LIMIT 10",
+            post_all: "SELECT count(`bm_posts`.`ID`) AS `posts_all` FROM `" + mysql_prefix + "blog_posts` WHERE `ID` IN (SELECT `object_id` FROM `" + mysql_prefix + "blog_term_relationships` WHERE `term_taxonomy_id` = (SELECT `term_taxonomy_id` FROM `" + mysql_prefix + "blog_term_taxonomy` WHERE `term_id` = (SELECT `term_id` FROM `" + mysql_prefix + "blog_terms` WHERE `name` = '" + ctx.params.name + "' OR `slug` = '" + ctx.params.name + "') AND `taxonomy` = 'post_tag'))",
+            tag: "SELECT `name` AS `tag_name` FROM `bm_terms` WHERE `term_id` IN ( SELECT * FROM (SELECT `term_id` FROM `bm_term_taxonomy` WHERE `taxonomy` = 'post_tag' ORDER BY `count` DESC LIMIT 15) AS `term_id`)",
+            category: "SELECT `name` AS `category_name` FROM `bm_terms` WHERE `term_id` in (SELECT `term_id` FROM `bm_term_taxonomy` WHERE `taxonomy` = 'category' AND `count` != 0)",
+            friendly_link: "SELECT `link_url`,`link_name`,`link_target` FROM `bm_links` WHERE `link_id` in (SELECT `object_id` FROM `bm_term_relationships` WHERE `term_taxonomy_id` in (SELECT `term_id`  FROM `bm_terms` WHERE `name` = '友情链接'))"
         };
 
         return querys(sql).then((result) => {
@@ -406,12 +502,12 @@ router
         var template = swig.compileFile(path.join(__dirname, 'app/blog/template/list.html'));
         var limit = parseInt((parseInt(ctx.params.num) - 1) * 10) + "," + 10;
         var sql = {
-            options: "SELECT `option_name`,`option_value` FROM `yi_blog_options` WHERE `option_id` < 7",
-            post: "SELECT * FROM `" + mysql_prefix + "blog_posts` WHERE `ID` IN (SELECT `object_id` FROM `" + mysql_prefix + "blog_term_relationships` WHERE `term_taxonomy_id` = (SELECT `term_taxonomy_id` FROM `" + mysql_prefix + "blog_term_taxonomy` WHERE `term_id` = (SELECT `term_id` FROM `" + mysql_prefix + "blog_terms` WHERE `name` = '" + ctx.params.name + "' OR `slug` = '" + ctx.params.name + "') AND `taxonomy` = 'post_tag')) ORDER BY `yi_blog_posts`.`ID` DESC LIMIT " + limit,
-            post_all: "SELECT count(`yi_blog_posts`.`ID`) AS `posts_all` FROM `" + mysql_prefix + "blog_posts` WHERE `ID` IN (SELECT `object_id` FROM `" + mysql_prefix + "blog_term_relationships` WHERE `term_taxonomy_id` = (SELECT `term_taxonomy_id` FROM `" + mysql_prefix + "blog_term_taxonomy` WHERE `term_id` = (SELECT `term_id` FROM `" + mysql_prefix + "blog_terms` WHERE `name` = '" + ctx.params.name + "' OR `slug` = '" + ctx.params.name + "') AND `taxonomy` = 'post_tag'))",
-            tag: "SELECT `name` AS `tag_name` FROM `yi_blog_terms` WHERE `term_id` IN ( SELECT * FROM (SELECT `term_id` FROM `yi_blog_term_taxonomy` WHERE `taxonomy` = 'post_tag' ORDER BY `count` DESC LIMIT 15) AS `term_id`)",
-            category: "SELECT `name` AS `category_name` FROM `yi_blog_terms` WHERE `term_id` in (SELECT `term_id` FROM `yi_blog_term_taxonomy` WHERE `taxonomy` = 'category' AND `count` != 0)",
-            friendly_link: "SELECT `link_url`,`link_name`,`link_target` FROM `yi_blog_links` WHERE `link_id` in (SELECT `object_id` FROM `yi_blog_term_relationships` WHERE `term_taxonomy_id` in (SELECT `term_id`  FROM `yi_blog_terms` WHERE `name` = '友情链接'))"
+            options: "SELECT `option_name`,`option_value` FROM `bm_options` WHERE `option_id` < 7",
+            post: "SELECT * FROM `" + mysql_prefix + "blog_posts` WHERE `ID` IN (SELECT `object_id` FROM `" + mysql_prefix + "blog_term_relationships` WHERE `term_taxonomy_id` = (SELECT `term_taxonomy_id` FROM `" + mysql_prefix + "blog_term_taxonomy` WHERE `term_id` = (SELECT `term_id` FROM `" + mysql_prefix + "blog_terms` WHERE `name` = '" + ctx.params.name + "' OR `slug` = '" + ctx.params.name + "') AND `taxonomy` = 'post_tag')) ORDER BY `bm_posts`.`ID` DESC LIMIT " + limit,
+            post_all: "SELECT count(`bm_posts`.`ID`) AS `posts_all` FROM `" + mysql_prefix + "blog_posts` WHERE `ID` IN (SELECT `object_id` FROM `" + mysql_prefix + "blog_term_relationships` WHERE `term_taxonomy_id` = (SELECT `term_taxonomy_id` FROM `" + mysql_prefix + "blog_term_taxonomy` WHERE `term_id` = (SELECT `term_id` FROM `" + mysql_prefix + "blog_terms` WHERE `name` = '" + ctx.params.name + "' OR `slug` = '" + ctx.params.name + "') AND `taxonomy` = 'post_tag'))",
+            tag: "SELECT `name` AS `tag_name` FROM `bm_terms` WHERE `term_id` IN ( SELECT * FROM (SELECT `term_id` FROM `bm_term_taxonomy` WHERE `taxonomy` = 'post_tag' ORDER BY `count` DESC LIMIT 15) AS `term_id`)",
+            category: "SELECT `name` AS `category_name` FROM `bm_terms` WHERE `term_id` in (SELECT `term_id` FROM `bm_term_taxonomy` WHERE `taxonomy` = 'category' AND `count` != 0)",
+            friendly_link: "SELECT `link_url`,`link_name`,`link_target` FROM `bm_links` WHERE `link_id` in (SELECT `object_id` FROM `bm_term_relationships` WHERE `term_taxonomy_id` in (SELECT `term_id`  FROM `bm_terms` WHERE `name` = '友情链接'))"
         };
 
         return querys(sql).then((result) => {
@@ -466,24 +562,24 @@ router
 
     .get('/test/querys/:name', (ctx) => {
         var sqls = {
-            table_a: "select count(*) from yi_blog_posts",
-            table_b: "select count(*) from yi_blog_terms",
-            table_c: "select count(*) from yi_blog_terms",
-            table_d: "select count(*) from yi_blog_terms",
-            table_e: "select count(*) from yi_blog_terms",
-            table_f: "select count(*) from yi_blog_terms",
-            table_g: "select count(*) from yi_blog_terms",
-            table_h: "select count(*) from yi_blog_users"
+            table_a: "select count(*) from bm_posts",
+            table_b: "select count(*) from bm_terms",
+            table_c: "select count(*) from bm_terms",
+            table_d: "select count(*) from bm_terms",
+            table_e: "select count(*) from bm_terms",
+            table_f: "select count(*) from bm_terms",
+            table_g: "select count(*) from bm_terms",
+            table_h: "select count(*) from bm_users"
         };
         // var sqls = [
-        //         "select count(*) from yi_blog_posts",
-        //         "select count(*) from yi_blog_terms",
-        //         "select count(*) from yi_blog_terms",
-        //         "select count(*) from yi_blog_terms",
-        //         "select count(*) from yi_blog_terms",
-        //         "select count(*) from yi_blog_terms",
-        //         "select count(*) from yi_blog_terms",
-        //         "select count(*) from yi_blog_users"
+        //         "select count(*) from bm_posts",
+        //         "select count(*) from bm_terms",
+        //         "select count(*) from bm_terms",
+        //         "select count(*) from bm_terms",
+        //         "select count(*) from bm_terms",
+        //         "select count(*) from bm_terms",
+        //         "select count(*) from bm_terms",
+        //         "select count(*) from bm_users"
         // ];
         return querys(sqls).then((post) => {
             if (post.length == 0) {
@@ -498,17 +594,17 @@ router
         return query_once_start().then((conn) => {
             var sqls_ob = {
                 table_a: function (callback) {
-                    conn.query('select count(*) from yi_blog_posts', function (err, result) {
+                    conn.query('select count(*) from bm_posts', function (err, result) {
                         callback(err, result[0]); // 将结果传入callback
                     });
                 },
                 table_b: function (callback) {
-                    conn.query('select count(*) from yi_blog_terms', function (err, result) {
+                    conn.query('select count(*) from bm_terms', function (err, result) {
                         callback(err, result[0]);
                     });
                 },
                 table_c: function (callback) {
-                    conn.query('select count(*) from yi_blog_users', function (err, result) {
+                    conn.query('select count(*) from bm_users', function (err, result) {
                         callback(err, result[0]);
                     });
                 }
@@ -531,17 +627,17 @@ router
             // sqls_ob是一个Object
             var sqls_ob = {
                 table_a: function (callback) {
-                    conn.query('select count(*) from yi_blog_posts', function (err, result) {
+                    conn.query('select count(*) from bm_posts', function (err, result) {
                         callback(err, result[0]); // 将结果传入callback
                     });
                 },
                 table_b: function (callback) {
-                    conn.query('select count(*) from yi_blog_terms', function (err, result) {
+                    conn.query('select count(*) from bm_terms', function (err, result) {
                         callback(err, result[0]);
                     });
                 },
                 table_c: function (callback) {
-                    conn.query('select count(*) from yi_blog_users', function (err, result) {
+                    conn.query('select count(*) from bm_users', function (err, result) {
                         callback(err, result[0]);
                     });
                 }
@@ -569,7 +665,7 @@ router
                 },
 
                 function (callback) {
-                    conn.query('select ID from yi_blog_posts WHERE `ID` = 5', function (err, result) {
+                    conn.query('select ID from bm_posts WHERE `ID` = 5', function (err, result) {
                         if (err) {
                             conn.rollback(); // 发生错误事务回滚
                             callback(err);
@@ -581,7 +677,7 @@ router
 
                 function (last, callback) {
                     console.log(last);
-                    conn.query('select * from yi_blog_posts WHERE `ID` = ' + last[0].ID, function (err, result) {
+                    conn.query('select * from bm_posts WHERE `ID` = ' + last[0].ID, function (err, result) {
                         if (err) {
                             conn.rollback(); // 发生错误事务回滚
                             callback(err);
@@ -616,4 +712,6 @@ app
     .use(router.allowedMethods())
     .listen(system_config.HTTP_server_port);
 
-console.log("Now start HTTP-API server on port " + system_config.HTTP_server_port + "...");
+console.log("Now start HTTP server on port " + system_config.HTTP_server_port + "...");
+
+export default app;

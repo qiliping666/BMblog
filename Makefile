@@ -11,15 +11,21 @@ $(SERVER):
 	BUNDLE=server NODE_ENV=production webpack --config ./webpack/prod.config.babel.js
 
 dev:
-	nodemon -x babel-node -w ./api ./api & \
-	babel-node ./dev-server & \
+	nodemon -x babel-node -w ./server/index.js ./server/index.js & \
+	babel-node ./server/dev-server.js & \
 	wait
 
 lint:
 	eslint api app webpack dev-server.js
 
+.PHONY: test
 test:
-	echo THERE ARE NO TESTS YET
+	@NODE_ENV=test ./node_modules/.bin/mocha \
+    		--compilers js:babel-register \
+    		--harmony \
+    		--reporter spec \
+    		--require should \
+    		test/*.js
 
 clean:
 	rm -rf $(CLIENT) $(SERVER)
