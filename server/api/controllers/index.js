@@ -12,7 +12,9 @@ moment.locale(system_config.System_country);//设置当地时间格式
 export default (ctx) => {
     api.home.index(function(data){
         console.log(data);
+        ctx.body = "test";
     });
+
 
     // if(env == "production"){
     //     //预留
@@ -64,5 +66,5 @@ export default (ctx) => {
     //
     //         ctx.render('list', posts);
     //     }
-    //});
+    // });
 };
