@@ -95,7 +95,10 @@ function index(fn){
 									resolve(data);
 								})
 						})
-					]).then(fn);		
+					]).then(function(data){
+						conn.release();
+						fn(data)
+					});		
 	})
 }
 export var home={
