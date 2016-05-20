@@ -6,7 +6,6 @@ import Koa_convert from 'koa-convert';
 import Koa_json from 'koa-json';
 import Koa_body_parser from 'koa-bodyparser';
 import Koa_Nunjucks from 'koa-nunjucks-2';
-import nunjucksDate from 'nunjucks-date';
 import {system_config} from './config.js';
 import {
     query,
@@ -22,7 +21,7 @@ import swig from 'swig';
 import serve from 'koa-static';
 import marked from 'marked';
 import {CheckPassword} from './app/tool/ass.js';
-//import nunjucks from 'nunjucks';
+import moment from 'moment';
 //import assemble from 'assemble';
 
 const app = new Koa();
@@ -30,10 +29,7 @@ const router = new Koa_router();
 const body_parser = new Koa_body_parser();
 //const env = system_config.System_type || 'development';//判断开发模式
 const mysql_prefix = system_config.mysql_prefix;//数据库前缀
-
-// nunjucks.configure('./app/blog/template/', {
-//     autoescape: true
-// });
+moment.locale('zh-cn');
 
 app
     .use(Koa_convert(body_parser))
@@ -73,6 +69,7 @@ router
             if (result.length == 0) {
                 ctx.throw(404, '未找该页面或没有任何文章内容!');
             } else {
+                result.post[0].post_date = moment(result.post[0].post_date).format('ll');
                 for (var a = 0; a < result.post.length; a++) {
                     result.post[a].post_content = setString(result.post[a].post_content.replace(/<[^>]+>/g, ""), 200);//去掉所有的html标记
                 }
