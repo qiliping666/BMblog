@@ -46,11 +46,21 @@ export var find=function(table,field,where,limit,order){
 
 	upwhere=whereinit(where);
 	if(upwhere){
-		wheresql='where='+where
+		wheresql='where='+where;
 	}
-	var sql="select "+data+" from `"+table+"`"+wheresql+"order by "+order+" LIMIT "+limit;
-	return 
+	if(limit){
+		limit=" LIMIT "+limit;
+	}else{
+		limit='';
+	}
+	if(order){
+		order="order by "+order;
+	}else{
+		order='';
+	}
+	var sql="select "+data+" from `"+table+"`"+wheresql+order+limit;
+	return sql;
 }
-export var findone=function(table,field,where,1,order){
+export var findone=function(table,field,where,order){
 	return find(table,field,where,1,order)
 }
