@@ -103,4 +103,4 @@ function index(fn){
 }
 export var home={
 	index:index
-}
+};

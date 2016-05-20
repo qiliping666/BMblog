@@ -20,14 +20,14 @@ const env = system_config.System_type || 'development';//判断开发模式
 
 
 app //初始化中间件
-    .use(Koa_convert(body_parser))  //获取表单信息中间件
+    .use(Koa_convert(body_parser))  //请求体解析中间件
     .use(Koa_convert(Koa_json()))   //json格式中间件
     .use(Koa_convert(Koa_logger()))
     .use(Koa_convert(Koa_favicon(path.join(__dirname, '../app/assets/img/favicon.ico'))))  //设置favicon.ico路径
     .use(Koa_convert(serve(path.join(__dirname, '../app')))) //设置静态资源路径
     .use(Koa_Nunjucks({  //Nunjucks模板引擎配置
         ext: 'html',
-        path: path.join(__dirname, 'app/blog/template'),
+        path: path.join(__dirname, 'app/themes/'+system_config.System_theme+'/template'), //引入主题模板
         nunjucksConfig: {
             autoescape: false
         }

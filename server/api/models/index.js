@@ -1,4 +1,3 @@
+import {home} from './home';
 
-import {home} from 'home';
-
-export var api={home:home}
+export var api={home:home};
