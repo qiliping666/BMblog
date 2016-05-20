@@ -255,7 +255,7 @@ router
                 },
 
                 function (callback) {
-                    conn.query("SELECT `user_pass`,`ID` FROM yidata.bm_users WHERE user_login = '" + ctx.request.body.username + "'", function (err, result) {
+                    conn.query("SELECT `user_pass`,`ID` FROM  bm_users  WHERE user_login = '" + ctx.request.body.username + "'", function (err, result) {
                         if (err || result.length == 0) {
                             conn.rollback(); // 发生错误事务回滚
                             callback(err || "no_acc");
