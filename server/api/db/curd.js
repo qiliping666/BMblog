@@ -1,19 +1,19 @@
 function whereinit(where) {
-    var upwhere = '';
+    var up_where;
     for (let i in where) {
-        if (upwhere.length == 0) {
-            if (!where[i]['op']) {
-                where[i]['op'] = "=";
-            }
-            upwhere = where[i]['name'] + where[i]['op'] + where[i]['value'];
+        if (!where[i]['op']) {
+            where[i]['op'] = "=";
+        }
+        if (up_where.length == 0) {
+            up_where = where[i]['name'] + where[i]['op'] + where[i]['value'];
         } else {
-            upwhere = +(i + where[i]['name'] + where[i]['op'] + where[i]['value']);
+            up_where = +(i + where[i]['name'] + where[i]['op'] + where[i]['value']);
         }
     }
-    return upwhere
+    return up_where
 }
 export var insert = function (db, table, data) {
-    var field = "", value = '';
+    var field, value;
     for (let i in data) {
         field = "`" + i + "`,";
         value = "'" + data[i] + "',";
@@ -26,12 +26,12 @@ export var updata = function (db, table, data, where) { //{"or":{'name':id,value
     if (!where) {
         throw('sql条件不能为空');
     }
-    var updata = '';
+    var updata;
     for (let i in data) {
         updata = "`" + i + "`='" + data[i] + "',";
     }
     updata = updata.slice(0, -1);
-    var upwhere = '';
+    var upwhere;
     upwhere = whereinit(where);
     return "UPDATE `" + table + "` SET " + updata + " WHERE " + upwhere;
 };
@@ -42,11 +42,11 @@ export var find = function (table, field, where, limit, order) {
         data += "`" + field[i] + "`,";
     }
     data = data.slice(0, -1);
-    var upwhere = '';
+    var where_sql;
 
-    upwhere = whereinit(where);
-    if (upwhere) {
-        wheresql = 'where=' + where;
+    var up_where = whereinit(where);
+    if (up_where) {
+        where_sql = 'where=' + up_where;
     }
     if (limit) {
         limit = " LIMIT " + limit;
@@ -58,7 +58,7 @@ export var find = function (table, field, where, limit, order) {
     } else {
         order = '';
     }
-    return "select " + data + " from `" + table + "`" + wheresql + order + limit;
+    return "select " + data + " from `" + table + "`" + where_sql + order + limit;
 };
 export var findone = function (table, field, where, order) {
     return find(table, field, where, 1, order)
