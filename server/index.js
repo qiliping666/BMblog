@@ -62,7 +62,7 @@ router
 
         var sql = {
             options: "SELECT `option_name`,`option_value` FROM `bm_options` WHERE `option_id` < 7",
-            post: "SELECT `bm_posts`.`ID` ,`post_title`,`post_date`, `post_content`,`display_name` FROM `" + mysql_prefix + "blog_posts`,`" + mysql_prefix + "blog_users` WHERE `post_type` = 'post' AND `post_status` = 'publish' AND `post_author` = `bm_users`.`ID` ORDER BY `bm_posts`.`ID` DESC LIMIT 10",
+            post: "SELECT `bm_posts`.`ID` ,`post_title`,`post_date`, `post_content`,`display_name` FROM `" + mysql_prefix + "posts`,`" + mysql_prefix + "users` WHERE `post_type` = 'post' AND `post_status` = 'publish' AND `post_author` = `bm_users`.`ID` ORDER BY `bm_posts`.`ID` DESC LIMIT 10",
             post_all: "SELECT count(`bm_posts`.`ID`) AS `posts_all` FROM `bm_posts`,`bm_users` WHERE `post_type` = 'post' AND `post_status` = 'publish' AND `post_author` = `bm_users`.`ID`",
             tag: "SELECT `name` AS `tag_name` FROM `bm_terms` WHERE `term_id` IN ( SELECT * FROM (SELECT `term_id` FROM `bm_term_taxonomy` WHERE `taxonomy` = 'post_tag' ORDER BY `count` DESC LIMIT 15) AS `term_id`)",
             category: "SELECT `name` AS `category_name` FROM `bm_terms` WHERE `term_id` in (SELECT `term_id` FROM `bm_term_taxonomy` WHERE `taxonomy` = 'category' AND `count` != 0)",
@@ -103,9 +103,9 @@ router
                     friendly_link: result.friendly_link
                 };
 
-                nunjucksDate.setDefaultFormat('MMMM Do YYYY, h:mm:ss a');
-                var env = new Koa_Nunjucks.Environment();
-                nunjucksDate.install(env, 'mySpecialDateFilter');
+                // nunjucksDate.setDefaultFormat('MMMM Do YYYY, h:mm:ss a');
+                // var env = new Koa_Nunjucks.Environment();
+                // nunjucksDate.install(env, 'mySpecialDateFilter');
                 ctx.render('list', posts);
                 //ctx.body = template(posts);
             }
@@ -117,7 +117,7 @@ router
         var limit = parseInt((parseInt(ctx.params.num) - 1) * 10) + "," + 10;
         var sql = {
             options: "SELECT `option_name`,`option_value` FROM `bm_options` WHERE `option_id` < 7",
-            post: "SELECT `bm_posts`.`ID` ,`post_title`,`post_date`, `post_content`,`display_name` FROM `" + mysql_prefix + "blog_posts`,`" + mysql_prefix + "blog_users` WHERE `post_type` = 'post' AND `post_status` = 'publish' AND `post_author` = `bm_users`.`ID` ORDER BY `bm_posts`.`ID` DESC LIMIT " + limit,
+            post: "SELECT `bm_posts`.`ID` ,`post_title`,`post_date`, `post_content`,`display_name` FROM `" + mysql_prefix + "_posts`,`" + mysql_prefix + "users` WHERE `post_type` = 'post' AND `post_status` = 'publish' AND `post_author` = `bm_users`.`ID` ORDER BY `bm_posts`.`ID` DESC LIMIT " + limit,
             post_all: "SELECT count(`bm_posts`.`ID`) AS `posts_all` FROM `bm_posts`,`bm_users` WHERE `post_type` = 'post' AND `post_status` = 'publish' AND `post_author` = `bm_users`.`ID`",
             tag: "SELECT `name` AS `tag_name` FROM `bm_terms` WHERE `term_id` IN ( SELECT * FROM (SELECT `term_id` FROM `bm_term_taxonomy` WHERE `taxonomy` = 'post_tag' ORDER BY `count` DESC LIMIT 15) AS `term_id`)",
             category: "SELECT `name` AS `category_name` FROM `bm_terms` WHERE `term_id` in (SELECT `term_id` FROM `bm_term_taxonomy` WHERE `taxonomy` = 'category' AND `count` != 0)",
@@ -168,7 +168,7 @@ router
 
         var sql = {
             options: "SELECT `option_name`,`option_value` FROM `bm_options` WHERE `option_id` < 7",
-            post: "SELECT * FROM `" + mysql_prefix + "blog_posts` WHERE `ID` = " + ctx.params.id + " AND `post_type` = 'post' AND `post_status` = 'publish'",
+            post: "SELECT * FROM `" + mysql_prefix + "posts` WHERE `ID` = " + ctx.params.id + " AND `post_type` = 'post' AND `post_status` = 'publish'",
             comment: "SELECT * FROM `bm_comments` WHERE `comment_post_ID` = " + ctx.params.id + " AND `comment_parent` = 0 ORDER BY `comment_ID` DESC",
             comment_back: "SELECT * FROM `bm_comments` WHERE `comment_post_ID` = " + ctx.params.id + " AND `comment_parent` != 0 ORDER BY `comment_ID` ASC",
             tag: "SELECT `name` AS `tag_name` FROM `bm_terms` WHERE `term_id` IN ( SELECT * FROM (SELECT `term_id` FROM `bm_term_taxonomy` WHERE `taxonomy` = 'post_tag' ORDER BY `count` DESC LIMIT 15) AS `term_id`)",
@@ -309,7 +309,7 @@ router
 
         var sql = {
             options: "SELECT `option_name`,`option_value` FROM `bm_options` WHERE `option_id` < 7",
-            post: "SELECT * FROM `" + mysql_prefix + "blog_posts`  WHERE `post_type` = 'page' AND `post_status` = 'publish' AND `post_name` = '" + ctx.params.page + "'",
+            post: "SELECT * FROM `" + mysql_prefix + "posts`  WHERE `post_type` = 'page' AND `post_status` = 'publish' AND `post_name` = '" + ctx.params.page + "'",
             tag: "SELECT `name` AS `tag_name` FROM `bm_terms` WHERE `term_id` IN ( SELECT * FROM (SELECT `term_id` FROM `bm_term_taxonomy` WHERE `taxonomy` = 'post_tag' ORDER BY `count` DESC LIMIT 15) AS `term_id`)",
             category: "SELECT `name` AS `category_name` FROM `bm_terms` WHERE `term_id` in (SELECT `term_id` FROM `bm_term_taxonomy` WHERE `taxonomy` = 'category' AND `count` != 0)",
             friendly_link: "SELECT `link_url`,`link_name`,`link_target` FROM `bm_links` WHERE `link_id` in (SELECT `object_id` FROM `bm_term_relationships` WHERE `term_taxonomy_id` in (SELECT `term_id`  FROM `bm_terms` WHERE `name` = '友情链接'))"
@@ -350,8 +350,8 @@ router
 
         var sql = {
             options: "SELECT `option_name`,`option_value` FROM `bm_options` WHERE `option_id` < 7",
-            post: "SELECT * FROM `" + mysql_prefix + "blog_posts` WHERE `ID` IN (SELECT `object_id` FROM `" + mysql_prefix + "blog_term_relationships` WHERE `term_taxonomy_id` = (SELECT `term_taxonomy_id` FROM `" + mysql_prefix + "blog_term_taxonomy` WHERE `term_id` = (SELECT `term_id` FROM `" + mysql_prefix + "blog_terms` WHERE `name` = '" + ctx.params.page + "' OR `slug` = '" + ctx.params.page + "') AND `taxonomy` = 'category')) ORDER BY `bm_posts`.`ID` DESC LIMIT 10",
-            post_all: "SELECT count(`bm_posts`.`ID`) AS `posts_all` FROM `" + mysql_prefix + "blog_posts` WHERE `ID` IN (SELECT `object_id` FROM `" + mysql_prefix + "blog_term_relationships` WHERE `term_taxonomy_id` = (SELECT `term_taxonomy_id` FROM `" + mysql_prefix + "blog_term_taxonomy` WHERE `term_id` = (SELECT `term_id` FROM `" + mysql_prefix + "blog_terms` WHERE `name` = '" + ctx.params.page + "' OR `slug` = '" + ctx.params.page + "') AND `taxonomy` = 'category'))",
+            post: "SELECT * FROM `" + mysql_prefix + "posts` WHERE `ID` IN (SELECT `object_id` FROM `" + mysql_prefix + "term_relationships` WHERE `term_taxonomy_id` = (SELECT `term_taxonomy_id` FROM `" + mysql_prefix + "term_taxonomy` WHERE `term_id` = (SELECT `term_id` FROM `" + mysql_prefix + "terms` WHERE `name` = '" + ctx.params.page + "' OR `slug` = '" + ctx.params.page + "') AND `taxonomy` = 'category')) ORDER BY `bm_posts`.`ID` DESC LIMIT 10",
+            post_all: "SELECT count(`bm_posts`.`ID`) AS `posts_all` FROM `" + mysql_prefix + "posts` WHERE `ID` IN (SELECT `object_id` FROM `" + mysql_prefix + "term_relationships` WHERE `term_taxonomy_id` = (SELECT `term_taxonomy_id` FROM `" + mysql_prefix + "term_taxonomy` WHERE `term_id` = (SELECT `term_id` FROM `" + mysql_prefix + "terms` WHERE `name` = '" + ctx.params.page + "' OR `slug` = '" + ctx.params.page + "') AND `taxonomy` = 'category'))",
             tag: "SELECT `name` AS `tag_name` FROM `bm_terms` WHERE `term_id` IN ( SELECT * FROM (SELECT `term_id` FROM `bm_term_taxonomy` WHERE `taxonomy` = 'post_tag' ORDER BY `count` DESC LIMIT 15) AS `term_id`)",
             category: "SELECT `name` AS `category_name` FROM `bm_terms` WHERE `term_id` in (SELECT `term_id` FROM `bm_term_taxonomy` WHERE `taxonomy` = 'category' AND `count` != 0)",
             friendly_link: "SELECT `link_url`,`link_name`,`link_target` FROM `bm_links` WHERE `link_id` in (SELECT `object_id` FROM `bm_term_relationships` WHERE `term_taxonomy_id` in (SELECT `term_id`  FROM `bm_terms` WHERE `name` = '友情链接'))"
@@ -401,8 +401,8 @@ router
         var limit = parseInt((parseInt(ctx.params.num) - 1) * 10) + "," + 10;
         var sql = {
             options: "SELECT `option_name`,`option_value` FROM `bm_options` WHERE `option_id` < 7",
-            post: "SELECT * FROM `" + mysql_prefix + "blog_posts` WHERE `ID` IN (SELECT `object_id` FROM `" + mysql_prefix + "blog_term_relationships` WHERE `term_taxonomy_id` = (SELECT `term_taxonomy_id` FROM `" + mysql_prefix + "blog_term_taxonomy` WHERE `term_id` = (SELECT `term_id` FROM `" + mysql_prefix + "blog_terms` WHERE `name` = '" + ctx.params.page + "' OR `slug` = '" + ctx.params.page + "') AND `taxonomy` = 'category')) ORDER BY `bm_posts`.`ID` DESC LIMIT " + limit,
-            post_all: "SELECT count(`bm_posts`.`ID`) AS `posts_all` FROM `" + mysql_prefix + "blog_posts` WHERE `ID` IN (SELECT `object_id` FROM `" + mysql_prefix + "blog_term_relationships` WHERE `term_taxonomy_id` = (SELECT `term_taxonomy_id` FROM `" + mysql_prefix + "blog_term_taxonomy` WHERE `term_id` = (SELECT `term_id` FROM `" + mysql_prefix + "blog_terms` WHERE `name` = '" + ctx.params.page + "' OR `slug` = '" + ctx.params.page + "') AND `taxonomy` = 'category'))",
+            post: "SELECT * FROM `" + mysql_prefix + "posts` WHERE `ID` IN (SELECT `object_id` FROM `" + mysql_prefix + "term_relationships` WHERE `term_taxonomy_id` = (SELECT `term_taxonomy_id` FROM `" + mysql_prefix + "term_taxonomy` WHERE `term_id` = (SELECT `term_id` FROM `" + mysql_prefix + "terms` WHERE `name` = '" + ctx.params.page + "' OR `slug` = '" + ctx.params.page + "') AND `taxonomy` = 'category')) ORDER BY `bm_posts`.`ID` DESC LIMIT " + limit,
+            post_all: "SELECT count(`bm_posts`.`ID`) AS `posts_all` FROM `" + mysql_prefix + "posts` WHERE `ID` IN (SELECT `object_id` FROM `" + mysql_prefix + "term_relationships` WHERE `term_taxonomy_id` = (SELECT `term_taxonomy_id` FROM `" + mysql_prefix + "term_taxonomy` WHERE `term_id` = (SELECT `term_id` FROM `" + mysql_prefix + "terms` WHERE `name` = '" + ctx.params.page + "' OR `slug` = '" + ctx.params.page + "') AND `taxonomy` = 'category'))",
             tag: "SELECT `name` AS `tag_name` FROM `bm_terms` WHERE `term_id` IN ( SELECT * FROM (SELECT `term_id` FROM `bm_term_taxonomy` WHERE `taxonomy` = 'post_tag' ORDER BY `count` DESC LIMIT 15) AS `term_id`)",
             category: "SELECT `name` AS `category_name` FROM `bm_terms` WHERE `term_id` in (SELECT `term_id` FROM `bm_term_taxonomy` WHERE `taxonomy` = 'category' AND `count` != 0)",
             friendly_link: "SELECT `link_url`,`link_name`,`link_target` FROM `bm_links` WHERE `link_id` in (SELECT `object_id` FROM `bm_term_relationships` WHERE `term_taxonomy_id` in (SELECT `term_id`  FROM `bm_terms` WHERE `name` = '友情链接'))"
@@ -452,8 +452,8 @@ router
 
         var sql = {
             options: "SELECT `option_name`,`option_value` FROM `bm_options` WHERE `option_id` < 7",
-            post: "SELECT * FROM `" + mysql_prefix + "blog_posts` WHERE `ID` IN (SELECT `object_id` FROM `" + mysql_prefix + "blog_term_relationships` WHERE `term_taxonomy_id` = (SELECT `term_taxonomy_id` FROM `" + mysql_prefix + "blog_term_taxonomy` WHERE `term_id` = (SELECT `term_id` FROM `" + mysql_prefix + "blog_terms` WHERE `name` = '" + ctx.params.name + "' OR `slug` = '" + ctx.params.name + "') AND `taxonomy` = 'post_tag')) ORDER BY `bm_posts`.`ID` DESC LIMIT 10",
-            post_all: "SELECT count(`bm_posts`.`ID`) AS `posts_all` FROM `" + mysql_prefix + "blog_posts` WHERE `ID` IN (SELECT `object_id` FROM `" + mysql_prefix + "blog_term_relationships` WHERE `term_taxonomy_id` = (SELECT `term_taxonomy_id` FROM `" + mysql_prefix + "blog_term_taxonomy` WHERE `term_id` = (SELECT `term_id` FROM `" + mysql_prefix + "blog_terms` WHERE `name` = '" + ctx.params.name + "' OR `slug` = '" + ctx.params.name + "') AND `taxonomy` = 'post_tag'))",
+            post: "SELECT * FROM `" + mysql_prefix + "posts` WHERE `ID` IN (SELECT `object_id` FROM `" + mysql_prefix + "term_relationships` WHERE `term_taxonomy_id` = (SELECT `term_taxonomy_id` FROM `" + mysql_prefix + "term_taxonomy` WHERE `term_id` = (SELECT `term_id` FROM `" + mysql_prefix + "terms` WHERE `name` = '" + ctx.params.name + "' OR `slug` = '" + ctx.params.name + "') AND `taxonomy` = 'post_tag')) ORDER BY `bm_posts`.`ID` DESC LIMIT 10",
+            post_all: "SELECT count(`bm_posts`.`ID`) AS `posts_all` FROM `" + mysql_prefix + "posts` WHERE `ID` IN (SELECT `object_id` FROM `" + mysql_prefix + "term_relationships` WHERE `term_taxonomy_id` = (SELECT `term_taxonomy_id` FROM `" + mysql_prefix + "term_taxonomy` WHERE `term_id` = (SELECT `term_id` FROM `" + mysql_prefix + "terms` WHERE `name` = '" + ctx.params.name + "' OR `slug` = '" + ctx.params.name + "') AND `taxonomy` = 'post_tag'))",
             tag: "SELECT `name` AS `tag_name` FROM `bm_terms` WHERE `term_id` IN ( SELECT * FROM (SELECT `term_id` FROM `bm_term_taxonomy` WHERE `taxonomy` = 'post_tag' ORDER BY `count` DESC LIMIT 15) AS `term_id`)",
             category: "SELECT `name` AS `category_name` FROM `bm_terms` WHERE `term_id` in (SELECT `term_id` FROM `bm_term_taxonomy` WHERE `taxonomy` = 'category' AND `count` != 0)",
             friendly_link: "SELECT `link_url`,`link_name`,`link_target` FROM `bm_links` WHERE `link_id` in (SELECT `object_id` FROM `bm_term_relationships` WHERE `term_taxonomy_id` in (SELECT `term_id`  FROM `bm_terms` WHERE `name` = '友情链接'))"
@@ -503,8 +503,8 @@ router
         var limit = parseInt((parseInt(ctx.params.num) - 1) * 10) + "," + 10;
         var sql = {
             options: "SELECT `option_name`,`option_value` FROM `bm_options` WHERE `option_id` < 7",
-            post: "SELECT * FROM `" + mysql_prefix + "blog_posts` WHERE `ID` IN (SELECT `object_id` FROM `" + mysql_prefix + "blog_term_relationships` WHERE `term_taxonomy_id` = (SELECT `term_taxonomy_id` FROM `" + mysql_prefix + "blog_term_taxonomy` WHERE `term_id` = (SELECT `term_id` FROM `" + mysql_prefix + "blog_terms` WHERE `name` = '" + ctx.params.name + "' OR `slug` = '" + ctx.params.name + "') AND `taxonomy` = 'post_tag')) ORDER BY `bm_posts`.`ID` DESC LIMIT " + limit,
-            post_all: "SELECT count(`bm_posts`.`ID`) AS `posts_all` FROM `" + mysql_prefix + "blog_posts` WHERE `ID` IN (SELECT `object_id` FROM `" + mysql_prefix + "blog_term_relationships` WHERE `term_taxonomy_id` = (SELECT `term_taxonomy_id` FROM `" + mysql_prefix + "blog_term_taxonomy` WHERE `term_id` = (SELECT `term_id` FROM `" + mysql_prefix + "blog_terms` WHERE `name` = '" + ctx.params.name + "' OR `slug` = '" + ctx.params.name + "') AND `taxonomy` = 'post_tag'))",
+            post: "SELECT * FROM `" + mysql_prefix + "posts` WHERE `ID` IN (SELECT `object_id` FROM `" + mysql_prefix + "term_relationships` WHERE `term_taxonomy_id` = (SELECT `term_taxonomy_id` FROM `" + mysql_prefix + "term_taxonomy` WHERE `term_id` = (SELECT `term_id` FROM `" + mysql_prefix + "terms` WHERE `name` = '" + ctx.params.name + "' OR `slug` = '" + ctx.params.name + "') AND `taxonomy` = 'post_tag')) ORDER BY `bm_posts`.`ID` DESC LIMIT " + limit,
+            post_all: "SELECT count(`bm_posts`.`ID`) AS `posts_all` FROM `" + mysql_prefix + "posts` WHERE `ID` IN (SELECT `object_id` FROM `" + mysql_prefix + "term_relationships` WHERE `term_taxonomy_id` = (SELECT `term_taxonomy_id` FROM `" + mysql_prefix + "term_taxonomy` WHERE `term_id` = (SELECT `term_id` FROM `" + mysql_prefix + "terms` WHERE `name` = '" + ctx.params.name + "' OR `slug` = '" + ctx.params.name + "') AND `taxonomy` = 'post_tag'))",
             tag: "SELECT `name` AS `tag_name` FROM `bm_terms` WHERE `term_id` IN ( SELECT * FROM (SELECT `term_id` FROM `bm_term_taxonomy` WHERE `taxonomy` = 'post_tag' ORDER BY `count` DESC LIMIT 15) AS `term_id`)",
             category: "SELECT `name` AS `category_name` FROM `bm_terms` WHERE `term_id` in (SELECT `term_id` FROM `bm_term_taxonomy` WHERE `taxonomy` = 'category' AND `count` != 0)",
             friendly_link: "SELECT `link_url`,`link_name`,`link_target` FROM `bm_links` WHERE `link_id` in (SELECT `object_id` FROM `bm_term_relationships` WHERE `term_taxonomy_id` in (SELECT `term_id`  FROM `bm_terms` WHERE `name` = '友情链接'))"
@@ -555,7 +555,7 @@ router
         ctx.set("Access-Control-Allow-headers", "Content-Type,Content-Length, Authorization, Accept,X-Requested-With");
         ctx.set("X-Powered-By", ' 3.2.1');
         ctx.set("Content-Type", "application/json;charset=utf-8");
-        return query("SELECT * FROM `" + mysql_prefix + "blog_posts` WHERE ID=542").then((a) => {
+        return query("SELECT * FROM `" + mysql_prefix + "posts` WHERE ID=542").then((a) => {
             ctx.body = a;
         });
     })
