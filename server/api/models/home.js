@@ -10,9 +10,9 @@ var pool = mysql.createPool({
     port: system_config.mysql_port,
     insecureAuth: true
 });
-const mysql_prefix="bm_"
+const mysql_prefix="bm_";
 function index(fn) {
-    new Promise(function (resolve, reject) {
+    return new Promise(function (resolve, reject) {
         pool.getConnection(function (err, conn) {
             if (err) {
                 reject(err);
@@ -95,12 +95,11 @@ function index(fn) {
             })
         ]).then(function (data) {
             conn.release();
-            	console.log(data[0])
+            	//console.log(data[0])
              var posts = {
                 options: data[0],
                 posts: data[1],
                 posts_all: data[2],
-                posts_now: "1",
                 post_tag: data[3],
                 post_category: data[4],
                 friendly_link: data[5]

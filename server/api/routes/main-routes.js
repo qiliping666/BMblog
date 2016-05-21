@@ -1,5 +1,6 @@
 import Koa_router from 'koa-router';
-import index from '../controllers/index';
+import controllers from '../controllers';
+
 import {system_config} from '../../config.js';
 const router = new Koa_router();
 
@@ -19,7 +20,8 @@ import marked from 'marked';
 import {CheckPassword} from '../../app/tool/ass.js';
 
 router
-    .get('/', index);
+    .get('/', controllers.home)
+    ;//.get('/page/:num',page_list);
     // .get('/page/:num', (ctx) => {
     //     var limit = parseInt((parseInt(ctx.params.num) - 1) * 10) + "," + 10;
     //     var sql = {

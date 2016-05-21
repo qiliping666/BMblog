@@ -57,7 +57,7 @@ export var find = function (table, field, where, limit, order) {
     } else {
         order = '';
     }
-    console.log("select " + data + " from `" + table + "`" + where_sql + order + limit)
+    //console.log("select " + data + " from `" + table + "`" + where_sql + order + limit)
     return "select " + data + " from `" + table + "`" + where_sql + order + limit +";";
 };
 export var findone = function (table, field, where, order) {
