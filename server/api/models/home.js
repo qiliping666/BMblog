@@ -23,8 +23,6 @@ function index(fn) {
     }).then(function (conn) {
         Promise.all([
             new Promise(function (resolve, reject) {
-                console.log("执行到这里了");
-                // "SELECT `option_name`,`option_value` FROM `bm_options` WHERE `option_id` < 7",
                 var sql = find('bm_options', ['option_name', 'option_value'], {
                     'and': {
                         name: 'option_id',
@@ -32,13 +30,12 @@ function index(fn) {
                         op: "<"
                     }
                 });
-                console.log(sql);
                 conn.query(sql, function (err, data) {
                     if (err) {
                         reject(err);
                         return;
                     }
-                    resolve({data);
+                    resolve(data);
                 })
             }),
 
@@ -98,15 +95,15 @@ function index(fn) {
             })
         ]).then(function (data) {
             conn.release();
-            
+            	console.log(data[0])
              var posts = {
-                options: data[0].RowDataPacket,
-                posts: data[1].RowDataPacket,
-                posts_all: data[2].RowDataPacket,
+                options: data[0],
+                posts: data[1],
+                posts_all: data[2],
                 posts_now: "1",
-                post_tag: data[3].RowDataPacket,
-                post_category: data[4].RowDataPacket,
-                friendly_link: data[5].RowDataPacket
+                post_tag: data[3],
+                post_category: data[4],
+                friendly_link: data[5]
             };
             fn(posts)
         },function(err){

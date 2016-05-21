@@ -12,7 +12,6 @@ moment.locale(system_config.System_country);//设置当地时间格式
 export default (ctx) => {
     api.home.index(function(data){
     	console.log(data)
-        console.log(data[0]['options']);
         ctx.body = "test";
     });
 
