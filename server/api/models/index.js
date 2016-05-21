@@ -1,3 +1,7 @@
 import home from './home.js';
 
-export var api = {home: home};
+var models = {
+    home: home,
+};
+
+export default models;
