@@ -38,7 +38,7 @@ function index(fn) {
                         reject(err);
                         return;
                     }
-                    resolve({"options":data});
+                    resolve({data);
                 })
             }),
 
@@ -50,7 +50,7 @@ function index(fn) {
                         reject(err);
                         return;
                     }
-                    resolve({"post":data});
+                    resolve(data);
                 })
             }),
             new Promise(function (resolve, reject) {
@@ -62,7 +62,7 @@ function index(fn) {
                         reject(err);
                         return;
                     }
-                    resolve({"post_all":data});
+                    resolve(data);
                 })
             }),
             new Promise(function (resolve, reject) {
@@ -72,7 +72,7 @@ function index(fn) {
                         reject(err);
                         return;
                     }
-                    resolve({"tag":data});
+                    resolve(data);
                 })
             }),
 
@@ -83,7 +83,7 @@ function index(fn) {
                         reject(err);
                         return;
                     }
-                    resolve({"category":data});
+                    resolve(data);
                 })
             }),
             new Promise(function (resolve, reject) {
@@ -93,12 +93,22 @@ function index(fn) {
                         reject(err);
                         return;
                     }
-                    resolve({"friendly_link":data});
+                    resolve(data);
                 })
             })
         ]).then(function (data) {
             conn.release();
-            fn(data)
+            
+             var posts = {
+                options: data[0].RowDataPacket,
+                posts: data[1].RowDataPacket,
+                posts_all: data[2].RowDataPacket,
+                posts_now: "1",
+                post_tag: data[3].RowDataPacket,
+                post_category: data[4].RowDataPacket,
+                friendly_link: data[5].RowDataPacket
+            };
+            fn(posts)
         },function(err){
         	console.log(err)
         });
