@@ -9,9 +9,8 @@ const mysql_prefix = system_config.mysql_prefix;//数据库前缀
 
 moment.locale(system_config.System_country);//设置当地时间格式
 
-export default (ctx) => {
-    return api.home.index().then((result) => {
-        //api.home.index(function(result){
+export default (ctx) =>{
+     api.home.index((result) => {
         if (result.length == 0) {
             ctx.throw(404, '未找该页面或没有任何文章内容!');
         } else {

@@ -12,7 +12,7 @@ var pool = mysql.createPool({
 });
 const mysql_prefix="bm_";
 function index(fn) {
-    return new Promise(function (resolve, reject) {
+    new Promise(function (resolve, reject) {
         pool.getConnection(function (err, conn) {
             if (err) {
                 reject(err);
