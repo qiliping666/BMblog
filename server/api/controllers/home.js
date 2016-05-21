@@ -8,8 +8,8 @@ const mysql_prefix = system_config.mysql_prefix;//数据库前缀
 
 moment.locale(system_config.System_country);//设置当地时间格式
 
-export default async (ctx) =>{
-     await api.home().then((result) => {
+export default (ctx) =>{
+     return api.home().then((result) => {
         if (result.length == 0) {
             ctx.throw(404, '未找该页面或没有任何文章内容!');
         } else {
