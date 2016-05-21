@@ -9,6 +9,7 @@ import {system_config} from './config.js';
 import path from 'path';
 import serve from 'koa-static';
 import main_routes from './api/routes/main-routes';
+import plugin_loader from './app/tool/plugin_loader.js';
 
 //import assemble from 'assemble';
 
@@ -32,6 +33,7 @@ app //初始化中间件
             autoescape: false
         }
     }))
+    .use(plugin_loader(system_config.System_plugin_path))
     .use(main_routes.routes())
     .use(main_routes.allowedMethods())
     //404
