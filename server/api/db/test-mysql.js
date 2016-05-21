@@ -1,6 +1,5 @@
 import {system_config} from '../../config.js';
 import mysql from 'mysql';
-import Q from 'q';
 import async from 'async';
 
 export var pool = mysql.createPool({
@@ -16,7 +15,7 @@ export var pool = mysql.createPool({
 //对外接口返回Promise函数形式
 //执行一行SQL语句并返回结果
 export var query = function (sql) {
-    return Q.promise(function (resolve, reject) {
+    return new Promise(function(resolve,reject){
         pool.getConnection(function (err, conn) {
             if (err) {
                 console.log("Error Connected to MySQL! " + err);
@@ -41,7 +40,7 @@ export var query = function (sql) {
 
 //异步执行多行SQL语句并返回结果
 export var querys = function (sqls) {
-    return Q.promise(function (resolve, reject) {
+    return new Promise(function(resolve,reject){
         pool.getConnection(function (err, conn) {
             if (err) {
                 console.log("Error Connected to MySQL! " + err);
@@ -83,7 +82,7 @@ export var querys = function (sqls) {
 
 //建立MySQL连接
 export var query_once_start = function () {
-    return Q.promise(function (resolve, reject) {
+    return new Promise(function(resolve,reject){
         pool.getConnection(function (err, conn) {
             if (err) {
                 console.log("Error Connected to MySQL! " + err);
@@ -98,7 +97,7 @@ export var query_once_start = function () {
 
 //并发执行多行SQL语句并返回结果
 export var querys_Parallelism = function (sql) {
-    return Q.promise(function (resolve, reject) {
+    return new Promise(function(resolve,reject){
         async.parallel(sql, function (err, results) {
             if (err) {
                 reject(err);
@@ -111,7 +110,7 @@ export var querys_Parallelism = function (sql) {
 
 //顺序执行多行SQL语句并返回结果
 export var querys_ASC = function (sql) {
-    return Q.promise(function (resolve, reject) {
+    return new Promise(function(resolve,reject){
         async.series(sql, function (err, results) {
             if (err) {
                 reject(err);
@@ -124,7 +123,7 @@ export var querys_ASC = function (sql) {
 
 //顺序执行多行SQL语句并返回结果 - 事务
 export var querys_Tx = function (sql) {
-    return Q.promise(function (resolve, reject) {
+    return new Promise(function(resolve,reject){
         async.waterfall(sql, function (err, results) {
             if (err) {
                 if(err == "no_acc"){

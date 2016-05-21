@@ -1,5 +1,5 @@
 import Koa_router from 'koa-router';
-import controllers from '../controllers/index';
+import controllers from '../controllers';
 
 const router = new Koa_router();
 
