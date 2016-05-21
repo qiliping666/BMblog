@@ -1,7 +1,4 @@
-import home from './home.js';
+import requireDir from 'require-dir';
+var dir = requireDir('./');
 
-var models = {
-    home: home,
-};
-
-export default models;
+export default dir;
