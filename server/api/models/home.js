@@ -10,7 +10,7 @@ var pool = mysql.createPool({
     port: system_config.mysql_port,
     insecureAuth: true
 });
-
+const mysql_prefix="bm_"
 function index(fn) {
     new Promise(function (resolve, reject) {
         pool.getConnection(function (err, conn) {
@@ -38,40 +38,31 @@ function index(fn) {
                         reject(err);
                         return;
                     }
-                    resolve(data);
+                    resolve({"options":data});
                 })
             }),
 
             new Promise(function (resolve, reject) {
-                // "SELECT `bm_posts`.`ID` ,`post_title`,`post_date`, `post_content`,`display_name` FROM `" + mysql_prefix + "posts`,`" + mysql_prefix + "users` WHERE `post_type` = 'post' AND `post_status` = 'publish' AND `post_author` = `bm_users`.`ID` ORDER BY `bm_posts`.`ID` DESC LIMIT 10"
-                var sql = find('bm_posts,bm_users', ['`bm_posts`.`ID`', 'post_title', 'post_date', 'post_content', 'display_name'],
-                    {
-                        'and': {name: 'post_type', value: 'post'},
-                        'and': {name: 'post_status', value: 'publish'},
-                        'and': {name: 'post_author', value: '`bm_users`.`id`'}
-                    }, '10', "`bm_posts`.`ID` DESC ");
+                var sql="SELECT `bm_posts`.`ID` ,`post_title`,`post_date`, `post_content`,`display_name` FROM `" + mysql_prefix + "posts`,`" + mysql_prefix + "users` WHERE `post_type` = 'post' AND `post_status` = 'publish' AND `post_author` = `bm_users`.`ID` ORDER BY `bm_posts`.`ID` DESC LIMIT 10;";
+               
                 conn.query(sql, function (err, data) {
                     if (err) {
                         reject(err);
                         return;
                     }
-                    resolve(data);
+                    resolve({"post":data});
                 })
             }),
             new Promise(function (resolve, reject) {
-                // "SELECT count(`bm_posts`.`ID`) AS `posts_all` FROM `bm_posts`,`bm_users` WHERE `post_type` = 'post' AND `post_status` = 'publish' AND `post_author` = `bm_users`.`ID`",
-                var sql = find('bm_posts', ['count(`bm_posts`.`ID`) AS `posts_all` '],
-                    {
-                        'and': {name: 'post_type', value: 'post'},
-                        'and': {name: 'post_status', value: 'publish'},
-                        'and': {name: 'post_author', value: '`bm_users`.`id`'}
-                    });
+                // 
+                var sql = "SELECT count(`bm_posts`.`ID`) AS `posts_all` FROM `bm_posts`,`bm_users` WHERE `post_type` = 'post' AND `post_status` = 'publish' AND `post_author` = `bm_users`.`ID`";
+              
                 conn.query(sql, function (err, data) {
                     if (err) {
                         reject(err);
                         return;
                     }
-                    resolve(data);
+                    resolve({"post_all":data});
                 })
             }),
             new Promise(function (resolve, reject) {
@@ -81,7 +72,7 @@ function index(fn) {
                         reject(err);
                         return;
                     }
-                    resolve(data);
+                    resolve({"tag":data});
                 })
             }),
 
@@ -92,7 +83,7 @@ function index(fn) {
                         reject(err);
                         return;
                     }
-                    resolve(data);
+                    resolve({"category":data});
                 })
             }),
             new Promise(function (resolve, reject) {
@@ -102,12 +93,14 @@ function index(fn) {
                         reject(err);
                         return;
                     }
-                    resolve(data);
+                    resolve({"friendly_link":data});
                 })
             })
         ]).then(function (data) {
             conn.release();
             fn(data)
+        },function(err){
+        	console.log(err)
         });
     })
 }

@@ -1,5 +1,5 @@
 function whereinit(where) {
-    var up_where;
+    var up_where='';
     for (let i in where) {
         if (!where[i]['op']) {
             where[i]['op'] = "=";
@@ -33,20 +33,19 @@ export var updata = function (db, table, data, where) { //{"or":{'name':id,value
     updata = updata.slice(0, -1);
     var upwhere;
     upwhere = whereinit(where);
-    return "UPDATE `" + table + "` SET " + updata + " WHERE " + upwhere;
+    return "UPDATE `" + table + "` SET " + updata + " WHERE " + upwhere+";";
 };
 export var find = function (table, field, where, limit, order) {
-    console.log("正在执行find函数");
     var data = '';
     for (let i in field) {
         data += "`" + field[i] + "`,";
     }
     data = data.slice(0, -1);
-    var where_sql;
+    var where_sql='';
 
     var up_where = whereinit(where);
     if (up_where) {
-        where_sql = 'where=' + up_where;
+        where_sql = 'where ' + up_where;
     }
     if (limit) {
         limit = " LIMIT " + limit;
@@ -58,7 +57,8 @@ export var find = function (table, field, where, limit, order) {
     } else {
         order = '';
     }
-    return "select " + data + " from `" + table + "`" + where_sql + order + limit;
+    console.log("select " + data + " from `" + table + "`" + where_sql + order + limit)
+    return "select " + data + " from `" + table + "`" + where_sql + order + limit +";";
 };
 export var findone = function (table, field, where, order) {
     return find(table, field, where, 1, order)
