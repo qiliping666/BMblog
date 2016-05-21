@@ -48,3 +48,7 @@ export default (ctx) =>{
         }
     });
 };
+
+export var list = (ctx) =>{
+    ctx.body = "homelist";
+};

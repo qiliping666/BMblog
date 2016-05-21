@@ -12,8 +12,8 @@ export default function() {
             'and': {
                 name: 'option_id',
                 value: 7,
-                op: "<",
-        },
+                op: "<"
+        }
     });
 
 
@@ -23,7 +23,7 @@ export default function() {
         pool.query("SELECT count(`bm_posts`.`ID`) AS `posts_all` FROM `bm_posts`,`bm_users` WHERE `post_type` = 'post' AND `post_status` = 'publish' AND `post_author` = `bm_users`.`ID`"),
         pool.query("SELECT `name` AS `tag_name` FROM `bm_terms` WHERE `term_id` IN ( SELECT * FROM (SELECT `term_id` FROM `bm_term_taxonomy` WHERE `taxonomy` = 'post_tag' ORDER BY `count` DESC LIMIT 15) AS `term_id`)"),
         pool.query("SELECT `name` AS `category_name` FROM `bm_terms` WHERE `term_id` in (SELECT `term_id` FROM `bm_term_taxonomy` WHERE `taxonomy` = 'category' AND `count` != 0)"),
-        pool.query("SELECT `link_url`,`link_name`,`link_target` FROM `bm_links` WHERE `link_id` in (SELECT `object_id` FROM `bm_term_relationships` WHERE `term_taxonomy_id` in (SELECT `term_id`  FROM `bm_terms` WHERE `name` = '友情链接'))"),
+        pool.query("SELECT `link_url`,`link_name`,`link_target` FROM `bm_links` WHERE `link_id` in (SELECT `object_id` FROM `bm_term_relationships` WHERE `term_taxonomy_id` in (SELECT `term_id`  FROM `bm_terms` WHERE `name` = '友情链接'))")
     ]).then(data => {
         return {
             options: data[0],
@@ -31,7 +31,7 @@ export default function() {
             posts_all: data[2],
             post_tag: data[3],
             post_category: data[4],
-            friendly_link: data[5],
+            friendly_link: data[5]
         };
     }, console.log);
 };
