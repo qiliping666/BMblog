@@ -9,8 +9,8 @@ const mysql_prefix = system_config.mysql_prefix;//数据库前缀
 
 moment.locale(system_config.System_country);//设置当地时间格式
 
-export default (ctx) =>{
-     api.home.index((result) => {
+export default async (ctx) =>{
+     await api.home().then((result) => {
         if (result.length == 0) {
             ctx.throw(404, '未找该页面或没有任何文章内容!');
         } else {
@@ -44,8 +44,6 @@ export default (ctx) =>{
                 post_category: result.post_category,
                 friendly_link: result.friendly_link
             };
-
-            console.log(posts);
 
             ctx.render('list', posts);
         }

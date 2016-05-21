@@ -11,8 +11,10 @@ var pool = mysql.createPool({
     insecureAuth: true
 });
 const mysql_prefix="bm_";
-function index(fn) {
-    new Promise(function (resolve, reject) {
+
+
+export default function() {
+    return new Promise(function (resolve, reject) {
         pool.getConnection(function (err, conn) {
             if (err) {
                 reject(err);
@@ -21,7 +23,7 @@ function index(fn) {
             resolve(conn)
         })
     }).then(function (conn) {
-        Promise.all([
+        return Promise.all([
             new Promise(function (resolve, reject) {
                 var sql = find('bm_options', ['option_name', 'option_value'], {
                     'and': {
@@ -41,7 +43,7 @@ function index(fn) {
 
             new Promise(function (resolve, reject) {
                 var sql="SELECT `bm_posts`.`ID` ,`post_title`,`post_date`, `post_content`,`display_name` FROM `" + mysql_prefix + "posts`,`" + mysql_prefix + "users` WHERE `post_type` = 'post' AND `post_status` = 'publish' AND `post_author` = `bm_users`.`ID` ORDER BY `bm_posts`.`ID` DESC LIMIT 10;";
-               
+
                 conn.query(sql, function (err, data) {
                     if (err) {
                         reject(err);
@@ -51,9 +53,9 @@ function index(fn) {
                 })
             }),
             new Promise(function (resolve, reject) {
-                // 
+                //
                 var sql = "SELECT count(`bm_posts`.`ID`) AS `posts_all` FROM `bm_posts`,`bm_users` WHERE `post_type` = 'post' AND `post_status` = 'publish' AND `post_author` = `bm_users`.`ID`";
-              
+
                 conn.query(sql, function (err, data) {
                     if (err) {
                         reject(err);
@@ -104,12 +106,9 @@ function index(fn) {
                 post_category: data[4],
                 friendly_link: data[5]
             };
-            fn(posts)
+            return posts;
         },function(err){
         	console.log(err)
         });
     })
-}
-export var home = {
-    index: index
 };
