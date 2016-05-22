@@ -1,9 +1,15 @@
 import {model_post} from '../models/post';
 import marked from 'marked';
+import {system_config} from '../../config.js';
+import moment from 'moment';
+
+moment.locale(system_config.System_country);//设置当地时间格式
 
 export default (ctx) => {
     return model_post(ctx).then((result) => {
         result.post[0].post_content = marked(result.post[0].post_content.replace(/\r\n/ig, '<br/>'));
+        result.post[0].post_date = moment(result.post[0].post_date).format('ll'); //格式化时间
+        result.post[0].post_modified = moment(result.post[0].post_modified).format('ll'); //格式化时间
 
         var options = "{";
         for (var n = 0; n < result.options.length; n++) {

@@ -1,6 +1,9 @@
 import {default as model_default,list as model_list} from '../models/tag';
 import {setString} from '../../app/tool/common_tool.js';
+import {system_config} from '../../config.js';
+import moment from 'moment';
 
+moment.locale(system_config.System_country);//设置当地时间格式
 export default (ctx) =>{
     return model_default(ctx).then((result) => {
         if (result.length == 0) {
@@ -8,6 +11,7 @@ export default (ctx) =>{
         } else {
             for (var a = 0; a < result.post.length; a++) {
                 result.post[a].post_content = setString(result.post[a].post_content.replace(/<[^>]+>/g, ""), 200);//去掉所有的html标记
+                result.post[a].post_date = moment(result.post[a].post_date).format('ll'); //格式化时间
             }
 
             var options = "{";

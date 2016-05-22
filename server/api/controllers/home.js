@@ -10,9 +10,9 @@ export default (ctx) => {
         if (result.length == 0) {
             ctx.throw(404, '未找该页面或没有任何文章内容!');
         } else {
-            result.posts[0].post_date = moment(result.posts[0].post_date).format('ll');
             for (var a = 0; a < result.posts.length; a++) {
                 result.posts[a].post_content = setString(result.posts[a].post_content.replace(/<[^>]+>/g, ""), 200);//去掉所有的html标记
+                result.posts[a].post_date = moment(result.posts[a].post_date).format('ll'); //格式化时间
             }
 
             var options = "{";
@@ -53,6 +53,7 @@ export var list = (ctx) => {
         } else {
             for (var a = 0; a < result.posts.length; a++) {
                 result.posts[a].post_content = setString(result.posts[a].post_content.replace(/<[^>]+>/g, ""), 200);//去掉所有的html标记
+                result.posts[a].post_date = moment(result.posts[a].post_date).format('ll'); //格式化时间
             }
 
             var options = "{";
