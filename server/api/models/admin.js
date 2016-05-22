@@ -47,6 +47,8 @@ export var login_post = (ctx)=> {
         ];
 
         return querys_Tx(sql).then((result) => {
+            //释放连接
+            conn.release();
             return result;
         });
     });
