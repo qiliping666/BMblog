@@ -3,9 +3,6 @@ import {setString} from '../../app/tool/common_tool.js';
 import {default as home,list as model_list} from '../models/home.js';
 import moment from 'moment';
 
-const env = system_config.System_type || 'development';//判断开发模式
-const mysql_prefix = system_config.mysql_prefix;//数据库前缀
-
 moment.locale(system_config.System_country);//设置当地时间格式
 
 export default (ctx) => {

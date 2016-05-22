@@ -11,6 +11,7 @@ router
     .get('/admin/login', controllers.admin.login)
     .post('/admin/login', controllers.admin.login_post)
     .get('/:page', controllers.page.default)
+    .get('/:page', controllers.page.page)
     .get('/:page/page/:num', controllers.page.list)
     .get('/tag/:name', controllers.tag.default)
     .get('/tag/:name/page/:num', controllers.tag.list)

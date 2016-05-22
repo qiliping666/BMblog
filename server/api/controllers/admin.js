@@ -1,13 +1,24 @@
+import {default as admin,login as model_post,login_post as model_login_post} from '../models/admin';
 export default (ctx) =>{
-    ctx.body = "admin";
+    ctx.render('admin/index', {double: 'rainbow'});
 };
 
 export var login = (ctx) =>{
-    ctx.body = "login";
+    ctx.render('admin/login');
 };
 
 export var login_post = (ctx) =>{
-    ctx.body = "login_post";
+    return model_login_post(ctx).then((result) => {
+        //释放连接
+        conn.release();
+        console.log(result);
+        if (result.length == 0) {
+            ctx.throw(500, '服务器错误');
+        } else {
+            ctx.set("Content-Type", "application/json;charset=utf-8");
+            ctx.body = result;
+        }
+    });
 };
 
 
