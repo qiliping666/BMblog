@@ -30,13 +30,16 @@ export function getConnection() {
 
 //并发执行多行SQL语句并返回结果
 export function querys_Parallelism(sqls) {
-    let list = [];
+    let keys = Object.keys(sqls);
+    let list = Object.values(sqls);
 
-    for(let sql of sqls) {
-        list.push(query(sql));
-    };
-
-    return Promise.all(list);
+    return Promise.all(list).then(data => {
+        let result = {};
+        for(let index in data) {
+            result[keys[index]] = data[index];
+        }
+        return result;
+    });
 };
 
 //顺序执行多行SQL语句并返回结果
