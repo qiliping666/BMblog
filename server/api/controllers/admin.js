@@ -9,8 +9,6 @@ export var login = (ctx) =>{
 
 export var login_post = (ctx) =>{
     return model_login_post(ctx).then((result) => {
-        //释放连接
-        conn.release();
         console.log(result);
         if (result.length == 0) {
             ctx.throw(500, '服务器错误');
