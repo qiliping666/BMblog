@@ -1,5 +1,5 @@
 import {default as model_default,list as model_list} from '../models/tag';
-import {setString} from '../../app/tool/common_tool.js';
+import {setString,option_format} from '../../app/tool/common_tool.js';
 import {system_config} from '../../config.js';
 import moment from 'moment';
 
@@ -14,15 +14,6 @@ export default (ctx) =>{
                 result.post[a].post_date = moment(result.post[a].post_date).format('ll'); //格式化时间
             }
 
-            var options = "{";
-            for (var n = 0; n < result.options.length; n++) {
-                options = options + "\"" + result.options[n].option_name + "\":\"" + result.options[n].option_value + "\"";
-                if (n < result.options.length - 1) {
-                    options = options + ",";
-                }
-            }
-            options = JSON.parse(options + "}");
-
             var temp = parseInt(parseInt(result.post_all[0].posts_all) / 10 + 1);
             var posts_all = [temp];
             for (var z = 0; z < temp; z++) {
@@ -30,7 +21,7 @@ export default (ctx) =>{
             }
 
             var posts = {
-                options: options,
+                options: option_format(result.options),
                 posts: result.post,
                 posts_all: posts_all,
                 posts_now: "1",
@@ -54,15 +45,6 @@ export var list = (ctx) =>{
                 result.post[a].post_content = setString(result.post[a].post_content.replace(/<[^>]+>/g, ""), 200);//去掉所有的html标记
             }
 
-            var options = "{";
-            for (var n = 0; n < result.options.length; n++) {
-                options = options + "\"" + result.options[n].option_name + "\":\"" + result.options[n].option_value + "\"";
-                if (n < result.options.length - 1) {
-                    options = options + ",";
-                }
-            }
-            options = JSON.parse(options + "}");
-
             var temp = parseInt(parseInt(result.post_all[0].posts_all) / 10 + 1);
             var posts_all = [temp];
             for (var z = 0; z < temp; z++) {
@@ -70,7 +52,7 @@ export var list = (ctx) =>{
             }
 
             var posts = {
-                options: options,
+                options: option_format(result.options),
                 posts: result.post,
                 posts_all: posts_all,
                 posts_now: ctx.params.num,

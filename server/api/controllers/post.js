@@ -1,6 +1,7 @@
 import {model_post} from '../models/post';
-import marked from 'marked';
+import {option_format} from '../../app/tool/common_tool';
 import {system_config} from '../../config.js';
+import marked from 'marked';
 import moment from 'moment';
 
 moment.locale(system_config.System_country);//设置当地时间格式
@@ -11,17 +12,8 @@ export default (ctx) => {
         result.post[0].post_date = moment(result.post[0].post_date).format('ll'); //格式化时间
         result.post[0].post_modified = moment(result.post[0].post_modified).format('ll'); //格式化时间
 
-        var options = "{";
-        for (var n = 0; n < result.options.length; n++) {
-            options = options + "\"" + result.options[n].option_name + "\":\"" + result.options[n].option_value + "\"";
-            if (n < result.options.length - 1) {
-                options = options + ",";
-            }
-        }
-        options = JSON.parse(options + "}");
-
         var posts = {
-            options: options,
+            options: option_format(result.options),
             post: result.post[0],
             post_comment: result.comment,
             post_comment_back: result.comment_back,

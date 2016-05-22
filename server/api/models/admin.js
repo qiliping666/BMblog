@@ -1,4 +1,6 @@
 import {query_once_start, querys_Tx} from '../db/mysql.js';
+import {CheckPassword} from '../../app/tool/ass';
+
 export var login_post = (ctx)=> {
     return query_once_start().then((conn) => {
         var sql = [
