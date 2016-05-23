@@ -31,7 +31,7 @@ export function getConnection() {
 //并发执行多行SQL语句并返回结果
 export function querys_Parallelism(sqls) {
     let keys = Object.keys(sqls);
-    let list = Object.values(sqls);
+    let list = Object.values(sqls); 
 
     return Promise.all(list).then(data => {
         let result = {};
